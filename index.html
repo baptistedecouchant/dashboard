@@ -2297,10 +2297,6 @@ const AVATAR_COLORS = ['#4f46e5','#0ea5e9','#10b981','#f59e0b','#ef4444','#8b5cf
 /* -------- Root & User --------*/
 let root;
 let user; // pointer to current user's workspace
-// Built-in defaults (shared for all visitors of the deployed site)
-const DEFAULT_SPOTIFY_CLIENT_ID = '4ba6245d35e948f08adbad17fff451ff';
-const DEFAULT_GOOGLE_CLIENT_ID = ''; // à remplir quand tu auras créé le projet Google Cloud
-
 function currentRedirectUri() {
   // Use exactly what's in the address bar (without query/hash), strip any ?code=...
   return window.location.origin + window.location.pathname;
@@ -2319,8 +2315,8 @@ function loadRoot() {
   if (!root.config) root.config = {};
   // Always force the redirect URI to match the current page (critical for Spotify/Google)
   root.config.redirectUri = currentRedirectUri();
-  if (!root.config.googleClientId) root.config.googleClientId = DEFAULT_GOOGLE_CLIENT_ID;
-  if (!root.config.spotifyClientId) root.config.spotifyClientId = DEFAULT_SPOTIFY_CLIENT_ID;
+  if (!root.config.googleClientId) root.config.googleClientId = '';
+  if (!root.config.spotifyClientId) root.config.spotifyClientId = '';
   // Per-user migrations
   Object.values(root.users).forEach(u => {
     if (!u.integrations) u.integrations = { google: null, spotify: null };
