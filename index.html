@@ -1631,9 +1631,9 @@
       <div class="config-section">
         <h4>Configuration du workspace (admin)</h4>
         <div class="form-row">
-          <label>URL de ton site (localhost ou URL hébergée)</label>
-          <input type="text" id="cfgRedirect" placeholder="http://localhost:5173/dashboard.html" />
-          <div class="hint">Doit correspondre <b>exactement</b> à l'URI de redirection configurée dans Google Cloud et Spotify Dashboard.</div>
+          <label>URL de redirection (auto-détectée)</label>
+          <input type="text" id="cfgRedirect" readonly style="background: var(--bg); font-family: 'JetBrains Mono', monospace; font-size: 12px;" />
+          <div class="hint">⚠️ Copie-colle <b>exactement</b> cette URL dans les <i>Redirect URIs</i> de ton app Spotify + des <i>Origines JS autorisées</i> et <i>URI de redirection autorisés</i> Google Cloud.</div>
         </div>
         <div class="form-row">
           <label>Google Client ID</label>
@@ -2297,6 +2297,15 @@ const AVATAR_COLORS = ['#4f46e5','#0ea5e9','#10b981','#f59e0b','#ef4444','#8b5cf
 /* -------- Root & User --------*/
 let root;
 let user; // pointer to current user's workspace
+// Built-in defaults (shared for all visitors of the deployed site)
+const DEFAULT_SPOTIFY_CLIENT_ID = '4ba6245d35e948f08adbad17fff451ff';
+const DEFAULT_GOOGLE_CLIENT_ID = ''; // à remplir quand tu auras créé le projet Google Cloud
+
+function currentRedirectUri() {
+  // Use exactly what's in the address bar (without query/hash), strip any ?code=...
+  return window.location.origin + window.location.pathname;
+}
+
 function loadRoot() {
   try {
     const raw = localStorage.getItem(ROOT_KEY);
@@ -2308,12 +2317,10 @@ function loadRoot() {
   } catch(e) { root = { currentUserId: null, users: {}, config: {} }; }
   // Migrations
   if (!root.config) root.config = {};
-  if (!root.config.redirectUri) {
-    const base = window.location.origin + window.location.pathname;
-    root.config.redirectUri = base;
-  }
-  if (!root.config.googleClientId) root.config.googleClientId = '';
-  if (!root.config.spotifyClientId) root.config.spotifyClientId = '';
+  // Always force the redirect URI to match the current page (critical for Spotify/Google)
+  root.config.redirectUri = currentRedirectUri();
+  if (!root.config.googleClientId) root.config.googleClientId = DEFAULT_GOOGLE_CLIENT_ID;
+  if (!root.config.spotifyClientId) root.config.spotifyClientId = DEFAULT_SPOTIFY_CLIENT_ID;
   // Per-user migrations
   Object.values(root.users).forEach(u => {
     if (!u.integrations) u.integrations = { google: null, spotify: null };
@@ -2619,7 +2626,8 @@ document.querySelectorAll('.tabs-row button').forEach(btn => {
 });
 
 document.getElementById('saveConfigBtn').addEventListener('click', () => {
-  root.config.redirectUri = document.getElementById('cfgRedirect').value.trim();
+  // redirectUri is auto-detected — never editable
+  root.config.redirectUri = currentRedirectUri();
   root.config.googleClientId = document.getElementById('cfgGoogleId').value.trim();
   root.config.spotifyClientId = document.getElementById('cfgSpotifyId').value.trim();
   saveRoot();
