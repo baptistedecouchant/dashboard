@@ -670,8 +670,12 @@
     border-top: 1px solid var(--border);
     margin-top: 8px;
     display: grid;
-    grid-template-columns: 1fr auto auto auto;
+    grid-template-columns: 1fr auto auto auto auto;
     gap: 8px;
+    align-items: stretch;
+  }
+  @media (max-width: 900px) {
+    .add-form { grid-template-columns: 1fr 1fr; }
   }
   .add-form input { padding: 8px 12px; }
   .add-form select { padding: 8px 10px; }
@@ -1378,9 +1382,9 @@
   .project-chip {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
+    gap: 7px;
     font-size: 11px;
-    padding: 2px 8px;
+    padding: 2px 10px 2px 11px;
     border-radius: 100px;
     font-weight: 500;
     background: var(--bg-soft);
@@ -1390,6 +1394,7 @@
     width: 7px; height: 7px;
     border-radius: 50%;
     display: inline-block;
+    flex-shrink: 0;
   }
   .overdue-badge {
     display: inline-block;
@@ -1402,6 +1407,105 @@
     margin-left: 6px;
   }
   html[data-theme="dark"] .overdue-badge { background: rgba(239, 68, 68, 0.15); color: #fca5a5; }
+
+  .carried-badge {
+    display: inline-block;
+    font-size: 10.5px;
+    padding: 1px 7px;
+    border-radius: 4px;
+    background: #fef3c7;
+    color: #92400e;
+    font-weight: 600;
+    margin-left: 6px;
+  }
+  html[data-theme="dark"] .carried-badge { background: rgba(245, 158, 11, 0.15); color: #fcd34d; }
+
+  /* Inline delete confirmation */
+  .btn-mini {
+    padding: 5px 10px;
+    font-size: 12px;
+    border-radius: 6px;
+  }
+  .btn-mini.btn-danger {
+    background: var(--danger);
+    color: white;
+    border-color: var(--danger);
+  }
+  .btn-mini.btn-danger:hover {
+    background: #dc2626;
+    border-color: #dc2626;
+  }
+  .delete-confirm {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 10px;
+    border-radius: var(--radius-md);
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    animation: slideInFade 0.18s ease-out;
+  }
+  html[data-theme="dark"] .delete-confirm {
+    background: rgba(239, 68, 68, 0.12);
+    border-color: rgba(239, 68, 68, 0.3);
+  }
+  .delete-confirm-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--danger);
+    white-space: nowrap;
+  }
+  .todo-item.pending-delete {
+    border-color: rgba(239, 68, 68, 0.35);
+    background: rgba(239, 68, 68, 0.03);
+  }
+  @keyframes slideInFade {
+    from { opacity: 0; transform: translateX(4px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  /* Estimate H+M input group */
+  .estimate-group {
+    display: inline-flex;
+    align-items: stretch;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--bg-elev);
+    overflow: hidden;
+    height: 38px;
+  }
+  .estimate-group input {
+    width: 44px;
+    border: none !important;
+    padding: 8px 4px 8px 8px !important;
+    text-align: right;
+    background: transparent;
+    font-size: 13.5px;
+    color: var(--text);
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+  .estimate-group input::-webkit-outer-spin-button,
+  .estimate-group input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  .estimate-group .est-unit {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 6px 0 2px;
+    font-size: 12px;
+    color: var(--text-muted);
+    user-select: none;
+  }
+  .estimate-group .est-sep {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 2px;
+    color: var(--text-faint);
+    font-size: 13px;
+  }
+  .estimate-group:focus-within { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
 
   /* ====================================================
      EXPORT MODAL
@@ -2001,7 +2105,13 @@
               <select id="newTaskProject" title="Projet">
                 <option value="">Projet…</option>
               </select>
-              <input type="number" id="newTaskEstimate" placeholder="Est. (min)" min="5" step="5" style="width: 110px;" />
+              <div class="estimate-group" title="Estimation du temps (heures et minutes)">
+                <input type="number" id="newTaskEstimateH" placeholder="0" min="0" max="24" aria-label="Heures" />
+                <span class="est-unit">h</span>
+                <span class="est-sep">:</span>
+                <input type="number" id="newTaskEstimateM" placeholder="00" min="0" max="59" step="5" aria-label="Minutes" />
+                <span class="est-unit">min</span>
+              </div>
               <button type="submit" class="btn btn-primary">Ajouter</button>
             </form>
           </div>
@@ -2763,7 +2873,7 @@ function renderHome() {
     .slice(0, 5);
   qt.innerHTML = upcoming.length ? upcoming.map(t => `
     <li data-task-id="${t.id}">
-      <div class="checkbox"></div>
+      <div class="checkbox ${t.done ? 'checked' : ''}" data-home-toggle="${t.id}" title="Marquer comme terminé"></div>
       <div style="flex:1; min-width:0;">
         <div style="font-weight:500; font-size:13.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(t.title)}</div>
         <div style="font-size:12px; color:var(--text-muted);">${fmtDateShort(t.date)}</div>
@@ -2772,7 +2882,15 @@ function renderHome() {
     </li>
   `).join('') : '<li class="quick-empty">Aucune tâche à venir 🎉</li>';
   qt.querySelectorAll('li[data-task-id]').forEach(li => {
-    li.addEventListener('click', () => goto('todo', { selectTask: li.dataset.taskId }));
+    li.addEventListener('click', (e) => {
+      const toggleEl = e.target.closest('[data-home-toggle]');
+      if (toggleEl) {
+        e.stopPropagation();
+        toggleTaskFromHome(toggleEl.dataset.homeToggle);
+        return;
+      }
+      goto('todo', { selectTask: li.dataset.taskId });
+    });
   });
 
   // Quick notes — clickable
@@ -2898,14 +3016,29 @@ document.getElementById('addTaskForm').addEventListener('submit', e => {
   const title = document.getElementById('newTaskTitle').value.trim();
   if (!title) return;
   const priority = document.getElementById('newTaskPriority').value;
-  const estimate = parseInt(document.getElementById('newTaskEstimate').value) || null;
+  const hEl = document.getElementById('newTaskEstimateH');
+  const mEl = document.getElementById('newTaskEstimateM');
+  const h = parseInt(hEl.value) || 0;
+  const m = parseInt(mEl.value) || 0;
+  const totalMin = h * 60 + m;
+  const estimate = totalMin > 0 ? totalMin : null;
   const project = document.getElementById('newTaskProject').value || null;
   const maxOrder = Math.max(-1, ...user.tasks.filter(t => t.date === user.currentDate).map(t => t.order||0));
   user.tasks.push({ id: uid(), order: maxOrder + 1, title, priority, date: user.currentDate, done: false, estimate, tracked: 0, project });
   document.getElementById('newTaskTitle').value = '';
-  document.getElementById('newTaskEstimate').value = '';
+  hEl.value = '';
+  mEl.value = '';
   saveRoot(); renderTodo();
 });
+
+function fmtEstimate(min) {
+  if (!min && min !== 0) return '';
+  const h = Math.floor(min / 60);
+  const m = min % 60;
+  if (h > 0 && m > 0) return `${h}h${String(m).padStart(2,'0')}`;
+  if (h > 0) return `${h}h`;
+  return `${m} min`;
+}
 
 function populateProjectSelect() {
   const sel = document.getElementById('newTaskProject');
@@ -2951,30 +3084,39 @@ function renderTodoList() {
   list.innerHTML = tasks.map(t => {
     const proj = user.projects?.find(p => p.id === t.project);
     const isOverdue = !t.done && t.date < todayS;
-    return `
-    <div class="todo-item ${t.done ? 'done' : ''} ${t.id === user.activeTaskId ? 'active-work' : ''}" draggable="true" data-id="${t.id}">
-      <div class="drag-handle" title="Glisser-déposer pour réorganiser">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>
-      </div>
-      <div class="todo-check" data-action="toggle"></div>
-      <div style="min-width:0; flex:1;">
-        <div class="todo-title">${escapeHtml(t.title)}${isOverdue ? '<span class="overdue-badge">EN RETARD</span>' : ''}</div>
-        <div class="todo-meta">
-          <span class="chip chip-${t.priority}"><span class="dot"></span>${priorityLabel(t.priority)}</span>
-          ${proj ? `<span class="project-chip"><span class="pdot" style="background:${proj.color}"></span>${escapeHtml(proj.name)}</span>` : ''}
-          ${t.estimate ? `<span>Est. ${t.estimate} min</span>` : ''}
-          ${t.tracked ? `<span class="time-badge">⏱ ${fmtMinutes(t.tracked)}</span>` : ''}
-          ${t.id === user.activeTaskId ? '<span class="chip chip-success"><span class="dot"></span>Sélectionnée</span>' : ''}
-        </div>
-      </div>
+    const isPendingDelete = pendingDeleteId === t.id;
+    const carried = !t.done && t.originalDate && t.originalDate < todayS;
+    const actions = isPendingDelete ? `
+      <div class="delete-confirm">
+        <span class="delete-confirm-label">Supprimer ?</span>
+        <button class="btn btn-mini" data-action="cancel-delete" type="button">Annuler</button>
+        <button class="btn btn-mini btn-danger" data-action="confirm-delete" type="button">Supprimer</button>
+      </div>` : `
       <div class="todo-actions">
-        <button class="icon-btn" data-action="select" title="Sélectionner pour le chrono">
+        <button class="icon-btn" data-action="select" title="Lancer le chrono sur cette tâche">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
         </button>
         <button class="icon-btn" data-action="delete" title="Supprimer">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 01-2 2H9a2 2 0 01-2-2L5 6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
         </button>
+      </div>`;
+    return `
+    <div class="todo-item ${t.done ? 'done' : ''} ${t.id === user.activeTaskId ? 'active-work' : ''} ${isPendingDelete ? 'pending-delete' : ''}" draggable="true" data-id="${t.id}">
+      <div class="drag-handle" title="Glisser-déposer pour réorganiser">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>
       </div>
+      <div class="todo-check" data-action="toggle"></div>
+      <div style="min-width:0; flex:1;">
+        <div class="todo-title">${escapeHtml(t.title)}${isOverdue ? '<span class="overdue-badge">EN RETARD</span>' : ''}${carried ? '<span class="carried-badge" title="Reportée automatiquement depuis un jour précédent">↻ Reportée</span>' : ''}</div>
+        <div class="todo-meta">
+          <span class="chip chip-${t.priority}"><span class="dot"></span>${priorityLabel(t.priority)}</span>
+          ${proj ? `<span class="project-chip"><span class="pdot" style="background:${proj.color}"></span>${escapeHtml(proj.name)}</span>` : ''}
+          ${t.estimate ? `<span>Est. ${fmtEstimate(t.estimate)}</span>` : ''}
+          ${t.tracked ? `<span class="time-badge">⏱ ${fmtMinutes(t.tracked)}</span>` : ''}
+          ${t.id === user.activeTaskId ? '<span class="chip chip-success"><span class="dot"></span>Sélectionnée</span>' : ''}
+        </div>
+      </div>
+      ${actions}
     </div>
   `;
   }).join('');
@@ -2985,7 +3127,9 @@ function renderTodoList() {
       const action = e.target.closest('[data-action]')?.dataset.action;
       if (action === 'toggle') return toggleTask(id);
       if (action === 'delete') return deleteTask(id);
-      if (action === 'select') return selectActiveTask(id);
+      if (action === 'cancel-delete') return cancelPendingDelete();
+      if (action === 'confirm-delete') return confirmPendingDelete(id);
+      if (action === 'select') return selectAndStart(id);
       selectActiveTask(id);
     });
     // Drag & drop
@@ -3036,11 +3180,52 @@ function toggleTask(id) {
   t.done = !t.done;
   saveRoot(); renderTodoList(); renderHome();
 }
+function toggleTaskFromHome(id) {
+  const t = user.tasks.find(x => x.id === id);
+  if (!t) return;
+  t.done = !t.done;
+  if (t.done && user.activeTaskId === id && user.timer.startedAt) {
+    stopTimer(true);
+  }
+  saveRoot();
+  renderHome();
+  renderTodoList();
+  toast(t.done ? `✓ « ${t.title} » marquée terminée` : `↺ « ${t.title} » réouverte`, t.done ? 'success' : null);
+}
+let pendingDeleteId = null;
+let pendingDeleteTimeout = null;
 function deleteTask(id) {
-  if (!confirm('Supprimer cette tâche ?')) return;
+  // First click: show inline confirmation. A second click on the main delete icon
+  // for the same task confirms immediately.
+  if (pendingDeleteId === id) {
+    confirmPendingDelete(id);
+    return;
+  }
+  pendingDeleteId = id;
+  clearTimeout(pendingDeleteTimeout);
+  // Auto-cancel after 6s so the row doesn't get stuck mid-state.
+  pendingDeleteTimeout = setTimeout(() => {
+    if (pendingDeleteId === id) {
+      pendingDeleteId = null;
+      renderTodoList();
+    }
+  }, 6000);
+  renderTodoList();
+}
+function confirmPendingDelete(id) {
+  clearTimeout(pendingDeleteTimeout);
+  pendingDeleteId = null;
+  const t = user.tasks.find(x => x.id === id);
+  const title = t ? t.title : '';
   user.tasks = user.tasks.filter(x => x.id !== id);
   if (user.activeTaskId === id) { user.activeTaskId = null; stopTimer(false); }
   saveRoot(); renderTodo(); renderHome();
+  if (title) toast(`🗑 « ${title} » supprimée`);
+}
+function cancelPendingDelete() {
+  clearTimeout(pendingDeleteTimeout);
+  pendingDeleteId = null;
+  renderTodoList();
 }
 function selectActiveTask(id) {
   if (user.timer.startedAt) stopTimer(true);
@@ -3051,13 +3236,27 @@ function selectActiveTask(id) {
   saveRoot();
   renderTodoList(); renderTimer();
 }
+function selectAndStart(id) {
+  const t = user.tasks.find(x => x.id === id);
+  if (!t) return;
+  if (t.done) {
+    toast('Tâche déjà terminée — décoche-la pour relancer le chrono', 'error');
+    return;
+  }
+  // If the timer is currently running for this exact task, do nothing (avoid reset).
+  if (user.activeTaskId === id && user.timer.startedAt) return;
+  // Switch task (this also persists any in-progress tracking for the previous task).
+  selectActiveTask(id);
+  startTimer();
+  toast(`▶ Chrono lancé sur « ${t.title} »`, 'success');
+}
 
 /* ----- Timer ----- */
 let timerInterval = null;
 function renderTimer() {
   const t = user.tasks.find(x => x.id === user.activeTaskId);
   document.getElementById('activeTaskTitle').textContent = t ? t.title : 'Aucune tâche sélectionnée';
-  document.getElementById('timerEstimate').textContent = t && t.estimate ? `${t.estimate} min` : '—';
+  document.getElementById('timerEstimate').textContent = t && t.estimate ? fmtEstimate(t.estimate) : '—';
   document.getElementById('timerTotal').textContent = t ? fmtMinutes(t.tracked || 0) : '0 min';
   const elapsed = computeElapsed();
   const disp = document.getElementById('timerDisplay');
@@ -4129,6 +4328,7 @@ document.addEventListener('keydown', (e) => {
   if (anyModalOpen && e.key !== 'Escape') return;
 
   if (e.key === 'Escape') {
+    if (pendingDeleteId) { cancelPendingDelete(); return; }
     if (focusOverlay.classList.contains('open')) { closeFocusMode(); return; }
     document.querySelectorAll('.modal-backdrop.open').forEach(m => {
       if (m.id !== 'onboardingModal') m.classList.remove('open');
@@ -4186,6 +4386,7 @@ document.addEventListener('keydown', (e) => {
    BOOT
    ==================================================== */
 function bootDashboard() {
+  carryForwardUnfinishedTasks();
   renderProfile();
   renderHome();
   renderTodo();
@@ -4199,6 +4400,39 @@ function bootDashboard() {
     timerInterval = setInterval(renderTimer, 1000);
   }
   refreshAllIntegrations();
+}
+
+/* Auto-rollover unfinished tasks:
+   Any non-done task dated before today is moved to today so nothing slips.
+   Since the task keeps its id, closing it today closes the same task
+   that appeared "yesterday" (i.e. closing the migrated task closes it
+   definitively). originalDate is preserved to keep history for stats. */
+function carryForwardUnfinishedTasks() {
+  if (!user || !Array.isArray(user.tasks)) return;
+  const today = todayStr();
+  let moved = 0;
+  user.tasks.forEach(t => {
+    if (!t.done && t.date && t.date < today) {
+      if (!t.originalDate) t.originalDate = t.date;
+      if (!Array.isArray(t.carriedFrom)) t.carriedFrom = [];
+      t.carriedFrom.push(t.date);
+      t.date = today;
+      moved++;
+    }
+  });
+  if (moved > 0) {
+    // Re-index order for today's tasks so new arrivals land at the top
+    // while keeping relative order of already-scheduled tasks.
+    const todayTasks = user.tasks.filter(t => t.date === today);
+    todayTasks.sort((a, b) => {
+      const aCarried = a.originalDate && a.originalDate !== today ? 0 : 1;
+      const bCarried = b.originalDate && b.originalDate !== today ? 0 : 1;
+      if (aCarried !== bCarried) return aCarried - bCarried;
+      return (a.order || 0) - (b.order || 0);
+    });
+    todayTasks.forEach((t, i) => { t.order = i; });
+    saveRoot();
+  }
 }
 
 function renderIntegrationStatusChips() {
