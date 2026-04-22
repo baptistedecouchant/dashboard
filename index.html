@@ -1249,6 +1249,184 @@
   .queue-album { color: var(--text-muted); font-size: 12.5px; }
   .queue-time { color: var(--text-muted); font-size: 12.5px; font-variant-numeric: tabular-nums; }
 
+  /* Spotify real-data UI: tabs, grids, devices, warnings */
+  .music-tabs {
+    display: flex;
+    gap: 4px;
+    margin: 28px 0 18px;
+    border-bottom: 1px solid var(--border);
+  }
+  .music-tab {
+    padding: 10px 18px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-muted);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color 0.12s, border-color 0.12s;
+  }
+  .music-tab:hover { color: var(--text); }
+  .music-tab.active { color: #1db954; border-bottom-color: #1db954; }
+  .music-tab .tab-count {
+    display: inline-block;
+    margin-left: 6px;
+    font-size: 11px;
+    background: var(--bg-soft);
+    padding: 2px 7px;
+    border-radius: 10px;
+    color: var(--text-muted);
+  }
+  .music-tab.active .tab-count { background: rgba(29,185,84,0.15); color: #1db954; }
+
+  .music-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 16px;
+  }
+  .music-card {
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 14px;
+    cursor: pointer;
+    transition: background 0.12s, transform 0.12s, border-color 0.12s;
+    position: relative;
+  }
+  .music-card:hover { background: var(--bg); border-color: rgba(29,185,84,0.4); transform: translateY(-2px); }
+  .music-card-cover {
+    width: 100%; aspect-ratio: 1;
+    border-radius: var(--radius-sm);
+    background: linear-gradient(135deg, #1db954, #169c46);
+    margin-bottom: 10px;
+    background-size: cover; background-position: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    display: grid; place-items: center;
+    font-size: 36px;
+  }
+  .music-card-play {
+    position: absolute;
+    right: 20px;
+    top: calc(14px + 100% - 140px);
+    width: 40px; height: 40px;
+    background: #1db954;
+    color: white;
+    border-radius: 50%;
+    display: none;
+    place-items: center;
+    box-shadow: 0 6px 16px rgba(29,185,84,0.45);
+    transition: transform 0.12s;
+    pointer-events: none;
+  }
+  .music-card:hover .music-card-play { display: grid; }
+  .music-card-title {
+    font-weight: 600;
+    font-size: 14px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .music-card-sub {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    margin-top: 3px;
+  }
+  .music-empty {
+    padding: 60px 20px;
+    text-align: center;
+    color: var(--text-muted);
+    background: var(--bg-soft);
+    border-radius: var(--radius-lg);
+    border: 1px dashed var(--border);
+  }
+  .music-empty h3 { margin: 8px 0 6px; font-size: 15px; color: var(--text); }
+
+  .device-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+    padding: 10px 14px;
+    background: var(--bg-soft);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .device-bar .device-label {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .device-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 11px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    font-size: 12.5px;
+    cursor: pointer;
+    color: var(--text);
+    transition: all 0.12s;
+  }
+  .device-chip:hover { border-color: #1db954; }
+  .device-chip.active {
+    background: rgba(29,185,84,0.12);
+    border-color: #1db954;
+    color: #1db954;
+    font-weight: 600;
+  }
+  .device-chip .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--text-faint);
+  }
+  .device-chip.active .dot {
+    background: #1db954;
+    box-shadow: 0 0 0 3px rgba(29,185,84,0.2);
+  }
+
+  .premium-warn {
+    margin: 0 0 18px;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, rgba(245,158,11,0.12), rgba(239,68,68,0.08));
+    border: 1px solid rgba(245,158,11,0.3);
+    border-radius: var(--radius-md);
+    color: var(--text);
+    font-size: 13.5px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .premium-warn-ico { font-size: 18px; flex-shrink: 0; }
+
+  .reconnect-banner {
+    margin: 0 0 18px;
+    padding: 12px 16px;
+    background: rgba(14,165,233,0.08);
+    border: 1px solid rgba(14,165,233,0.25);
+    border-radius: var(--radius-md);
+    font-size: 13.5px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+  .reconnect-banner button {
+    padding: 7px 14px;
+    background: #0ea5e9;
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .reconnect-banner button:hover { background: #0284c7; }
+
   /* ====================================================
      MISC
      ==================================================== */
@@ -1348,6 +1526,65 @@
     line-height: 1.4;
   }
   .config-section .hint a { color: var(--primary); }
+
+  .ics-config {
+    background: var(--bg-soft);
+    padding: 14px;
+    border-radius: var(--radius-md);
+    margin: -4px 0 16px;
+    border: 1px solid var(--border);
+  }
+  .ics-config .form-row { margin-bottom: 10px; }
+  .ics-config .hint {
+    font-size: 11.5px;
+    color: var(--text-faint);
+    margin-top: 4px;
+    line-height: 1.45;
+  }
+  .ics-callout {
+    display: flex;
+    gap: 12px;
+    padding: 14px 16px;
+    margin: 4px 0 16px;
+    border-radius: var(--radius-md);
+    background: linear-gradient(135deg, rgba(79,70,229,0.08), rgba(16,185,129,0.08));
+    border: 1px solid rgba(79,70,229,0.2);
+  }
+  html[data-theme="dark"] .ics-callout {
+    background: linear-gradient(135deg, rgba(79,70,229,0.14), rgba(16,185,129,0.12));
+    border-color: rgba(79,70,229,0.3);
+  }
+  .ics-callout-ico {
+    font-size: 22px;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+  }
+  .ics-callout-title { font-weight: 600; font-size: 14px; margin-bottom: 2px; }
+  .ics-callout-body { font-size: 12.5px; color: var(--text-muted); line-height: 1.5; }
+  .ics-callout-body code {
+    background: var(--bg-soft);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+  }
+  .reco-badge {
+    display: inline-block;
+    margin-left: 6px;
+    font-size: 10.5px;
+    font-weight: 600;
+    padding: 1px 7px;
+    border-radius: 10px;
+    background: #10b981;
+    color: white;
+    letter-spacing: 0.02em;
+    vertical-align: 1px;
+  }
 
   .modal.wide { max-width: 620px; }
   .modal.xwide { max-width: 780px; }
@@ -1506,6 +1743,79 @@
     font-size: 13px;
   }
   .estimate-group:focus-within { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+
+  /* Task ↔ Event linking chip */
+  .event-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    padding: 2px 4px 2px 10px;
+    border-radius: 100px;
+    font-weight: 500;
+    background: rgba(99, 102, 241, 0.08);
+    color: #4f46e5;
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    cursor: pointer;
+    max-width: 260px;
+  }
+  html[data-theme="dark"] .event-chip {
+    background: rgba(99, 102, 241, 0.15);
+    color: #a5b4fc;
+    border-color: rgba(99, 102, 241, 0.35);
+  }
+  .event-chip:hover { background: rgba(99, 102, 241, 0.14); }
+  .event-chip-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+  .event-chip-close {
+    border: none;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    padding: 0 4px;
+    font-size: 14px;
+    line-height: 1;
+    opacity: 0.6;
+    border-radius: 50%;
+  }
+  .event-chip-close:hover { opacity: 1; background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+
+  .link-picker {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 8px;
+    border-radius: var(--radius-md);
+    background: rgba(99, 102, 241, 0.05);
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    animation: slideInFade 0.18s ease-out;
+  }
+  .link-picker-select {
+    padding: 6px 8px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 12px;
+    max-width: 280px;
+    background: var(--bg-elev);
+    color: var(--text);
+  }
+  .todo-item.pending-link { border-color: rgba(99, 102, 241, 0.4); }
+
+  .agenda-event-linked {
+    margin-top: 4px;
+    font-size: 10px;
+    opacity: 0.9;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+  .agenda-event.flash {
+    animation: eventFlash 0.6s ease-in-out 3;
+    outline: 3px solid #fbbf24;
+    outline-offset: 2px;
+  }
+  @keyframes eventFlash {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+  }
 
   /* ====================================================
      EXPORT MODAL
@@ -1752,12 +2062,58 @@
         <button class="btn btn-primary btn-sm" id="saveConfigBtn">Enregistrer la configuration</button>
       </div>
 
+      <div class="ics-callout">
+        <div class="ics-callout-ico">⚡</div>
+        <div>
+          <div class="ics-callout-title">Le plus simple : un lien iCal</div>
+          <div class="ics-callout-body">Colle une URL <code>.ics</code> (Google Calendar, Apple, Outlook, Notion…) — aucune connexion Google, aucun OAuth. Les alertes 5 min avant et le lien avec tes tâches fonctionnent pareil.</div>
+        </div>
+      </div>
+
       <p class="sub" style="margin-bottom: 10px;">Chaque utilisateur connecte ensuite ses propres comptes ci-dessous :</p>
+
+      <div class="integration-row" id="rowIcs">
+        <div class="ico" style="background:#fef3c7;">🔗</div>
+        <div>
+          <div class="title">Agenda via lien iCal (ICS) <span class="reco-badge">Recommandé</span></div>
+          <div class="sub" id="icsStatus"><span class="status-dot off"></span>Aucun lien configuré</div>
+        </div>
+        <div class="actions">
+          <button class="btn btn-sm btn-primary" id="configureIcsBtn">Configurer</button>
+          <button class="btn btn-sm" id="syncIcsBtn" style="display:none;">Synchroniser</button>
+          <button class="btn btn-sm btn-danger" id="disconnectIcsBtn" style="display:none;">Retirer</button>
+        </div>
+      </div>
+
+      <div class="ics-config" id="icsConfigBlock" style="display:none;">
+        <div class="form-row">
+          <label>URL iCal (.ics)</label>
+          <input type="text" id="icsUrl" placeholder="https://calendar.google.com/calendar/ical/.../basic.ics" />
+          <div class="hint">
+            <b>Où trouver le lien ?</b> Google Calendar → ⚙ Paramètres → (choisis ton agenda à gauche) → section <i>« Intégrer l'agenda »</i> → <b>Adresse secrète au format iCal</b>. Colle l'URL ici. Aucune autorisation à cliquer, aucun compte à lier. Fonctionne aussi avec Outlook, Apple Calendar, Notion Calendar, Calendly…
+          </div>
+        </div>
+        <div class="form-row">
+          <label>
+            <input type="checkbox" id="icsAlerts" checked style="width:auto; margin-right:8px;" />
+            Alerter avant chaque événement
+          </label>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <input type="number" id="icsAlertLead" min="1" max="60" value="5" style="width:70px;" />
+            <span style="color:var(--text-muted); font-size:13px;">minutes avant le début</span>
+          </div>
+          <div class="hint">Les notifications utilisent le système d'exploitation (accorde la permission au 1er essai). Une alerte in-app reste visible en secours.</div>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-primary btn-sm" id="saveIcsBtn">Enregistrer et synchroniser</button>
+          <button type="button" class="btn btn-sm" id="cancelIcsBtn">Annuler</button>
+        </div>
+      </div>
 
       <div class="integration-row" id="rowGoogle">
         <div class="ico" style="background:#eef2ff;">📅</div>
         <div>
-          <div class="title">Google Agenda + Gmail</div>
+          <div class="title">Google Agenda + Gmail <span style="font-weight:400; font-size:11.5px; color:var(--text-faint);">(OAuth — option avancée)</span></div>
           <div class="sub" id="googleStatus"><span class="status-dot off"></span>Non connecté</div>
         </div>
         <div class="actions">
@@ -2301,6 +2657,18 @@
       </div>
 
       <div class="music-wrap">
+        <div id="reconnectBanner" class="reconnect-banner" style="display:none;">
+          <div><strong>Mise à jour des permissions Spotify</strong> — reconnecte pour activer la lecture de tes favoris et le contrôle de la musique.</div>
+          <button id="reconnectSpotifyBtn">Reconnecter Spotify</button>
+        </div>
+
+        <div id="premiumWarn" class="premium-warn" style="display:none;">
+          <span class="premium-warn-ico">⚠️</span>
+          <div><strong>Compte Spotify Free détecté.</strong> Tu peux voir tes morceaux likés et tes playlists, mais le contrôle de la lecture (play/pause/skip) nécessite <strong>Spotify Premium</strong>.</div>
+        </div>
+
+        <div id="deviceBar" class="device-bar" style="display:none;"></div>
+
         <div class="now-playing-card">
           <div class="album-art" id="albumArt">🎧</div>
           <div class="now-info">
@@ -2326,9 +2694,24 @@
           </div>
         </div>
 
-        <h3 class="queue-title">File d'attente</h3>
-        <div class="card" style="padding: 8px;">
-          <div id="queueList"></div>
+        <div class="music-tabs" id="musicTabs">
+          <button class="music-tab active" data-tab="queue">File d'attente</button>
+          <button class="music-tab" data-tab="liked">Mes favoris <span class="tab-count" id="likedCount"></span></button>
+          <button class="music-tab" data-tab="playlists">Mes playlists <span class="tab-count" id="playlistsCount"></span></button>
+        </div>
+
+        <div id="tabPanelQueue">
+          <div class="card" style="padding: 8px;">
+            <div id="queueList"></div>
+          </div>
+        </div>
+
+        <div id="tabPanelLiked" style="display:none;">
+          <div id="likedGrid" class="music-grid"></div>
+        </div>
+
+        <div id="tabPanelPlaylists" style="display:none;">
+          <div id="playlistsGrid" class="music-grid"></div>
         </div>
       </div>
     </section>
@@ -2746,6 +3129,53 @@ document.getElementById('disconnectGoogleBtn').addEventListener('click', () => d
 document.getElementById('connectSpotifyBtn').addEventListener('click', () => connectSpotify());
 document.getElementById('disconnectSpotifyBtn').addEventListener('click', () => disconnectSpotify());
 
+/* --- ICS direct-link handlers --- */
+document.getElementById('configureIcsBtn').addEventListener('click', () => {
+  const block = document.getElementById('icsConfigBlock');
+  const cfg = user.integrations?.ics || {};
+  document.getElementById('icsUrl').value = cfg.url || '';
+  document.getElementById('icsAlerts').checked = cfg.alertsEnabled !== false;
+  document.getElementById('icsAlertLead').value = cfg.leadMinutes || 5;
+  block.style.display = 'block';
+});
+document.getElementById('cancelIcsBtn').addEventListener('click', () => {
+  document.getElementById('icsConfigBlock').style.display = 'none';
+});
+document.getElementById('saveIcsBtn').addEventListener('click', async () => {
+  const url = document.getElementById('icsUrl').value.trim();
+  if (!url) { toast('Colle d\'abord l\'URL iCal', 'error'); return; }
+  if (!/^https?:\/\//i.test(url)) { toast('L\'URL doit commencer par http(s)://', 'error'); return; }
+  if (!user.integrations) user.integrations = {};
+  user.integrations.ics = {
+    url,
+    alertsEnabled: document.getElementById('icsAlerts').checked,
+    leadMinutes: parseInt(document.getElementById('icsAlertLead').value) || 5,
+    lastSync: null,
+    lastError: null
+  };
+  saveRoot();
+  document.getElementById('icsConfigBlock').style.display = 'none';
+  renderIntegrationsUi();
+  await refreshIcsCalendar({ silent: false });
+  startIcsRefreshLoop();
+  // Ask notification permission when user activates alerts for the first time
+  if (user.integrations.ics.alertsEnabled) requestAlertPermission();
+});
+document.getElementById('syncIcsBtn').addEventListener('click', () => refreshIcsCalendar({ silent: false }));
+document.getElementById('disconnectIcsBtn').addEventListener('click', () => {
+  if (!user.integrations?.ics) return;
+  user.integrations.ics = null;
+  user.icsEvents = null;
+  saveRoot();
+  if (icsRefreshTimer) { clearInterval(icsRefreshTimer); icsRefreshTimer = null; }
+  renderIntegrationsUi();
+  renderIntegrationStatusChips();
+  renderAgenda();
+  renderHome();
+  scheduleAlerts();
+  toast('Agenda iCal retiré', 'success');
+});
+
 function renderIntegrationsUi() {
   const g = user.integrations?.google;
   const googleRow = document.getElementById('rowGoogle');
@@ -2787,6 +3217,40 @@ function renderIntegrationsUi() {
     connectS.style.display = '';
     connectS.disabled = noId;
     disconnectS.style.display = 'none';
+  }
+
+  /* ICS row */
+  const ics = user.integrations?.ics;
+  const icsRow = document.getElementById('rowIcs');
+  const icsStatus = document.getElementById('icsStatus');
+  const configureIcs = document.getElementById('configureIcsBtn');
+  const syncIcs = document.getElementById('syncIcsBtn');
+  const disconnectIcs = document.getElementById('disconnectIcsBtn');
+  if (ics?.url) {
+    icsRow.classList.add('connected');
+    const count = Array.isArray(user.icsEvents) ? user.icsEvents.length : 0;
+    const syncTxt = ics.lastSync ? relativeTime(ics.lastSync) : 'pas encore synchronisé';
+    const alertsTxt = ics.alertsEnabled === false ? 'alertes off' : `alertes ${ics.leadMinutes || 5}min avant`;
+    if (ics.lastError) {
+      icsStatus.innerHTML = `<span class="status-dot off" style="background:#ef4444;"></span>Erreur sync : ${escapeHtml(ics.lastError)} · <a href="#" id="icsRetryLink" style="color:var(--primary);">réessayer</a>`;
+      setTimeout(() => {
+        document.getElementById('icsRetryLink')?.addEventListener('click', e => {
+          e.preventDefault();
+          refreshIcsCalendar({ silent: false });
+        });
+      }, 0);
+    } else {
+      icsStatus.innerHTML = `<span class="status-dot on"></span>Connecté · ${count} événements · ${escapeHtml(syncTxt)} · ${escapeHtml(alertsTxt)}`;
+    }
+    configureIcs.textContent = 'Modifier';
+    syncIcs.style.display = '';
+    disconnectIcs.style.display = '';
+  } else {
+    icsRow.classList.remove('connected');
+    icsStatus.innerHTML = `<span class="status-dot off"></span>Aucun lien configuré`;
+    configureIcs.textContent = 'Configurer';
+    syncIcs.style.display = 'none';
+    disconnectIcs.style.display = 'none';
   }
 }
 
@@ -2909,20 +3373,32 @@ function renderHome() {
     li.addEventListener('click', () => goto('notes', { openNote: li.dataset.noteId }));
   });
 
-  // Agenda preview
+  // Agenda preview — utilise les événements réels (ICS/Google) si présents, sinon démo
   const ha = document.getElementById('homeAgenda');
   const dowToday = (new Date().getDay()); // 0=sun
-  const todayEvents = user.events.filter(e => e.dow === dowToday).sort((a,b) => a.start - b.start);
-  ha.innerHTML = todayEvents.length ? todayEvents.slice(0,5).map(e => `
-    <div class="event-row" data-jump="agenda">
+  const realEvts = mergedRealEvents();
+  let todayEventsForHome;
+  if (realEvts) {
+    const todayStrVal = todayStr();
+    todayEventsForHome = realEvts
+      .filter(e => !e.allDay && todayStr(new Date(e.start)) === todayStrVal)
+      .map(e => ({ id: e.id, start: e.startH, end: e.endH, title: e.title, cat: e.cat, startISO: e.start }))
+      .sort((a,b) => a.start - b.start);
+  } else {
+    todayEventsForHome = user.events.filter(e => e.dow === dowToday).sort((a,b) => a.start - b.start);
+  }
+  ha.innerHTML = todayEventsForHome.length ? todayEventsForHome.slice(0,5).map(e => {
+    const linked = e.id ? user.tasks.filter(t => t.eventId === e.id && !t.done) : [];
+    return `
+    <div class="event-row" data-jump="agenda" ${e.id ? `data-event-id="${escapeHtml(e.id)}"` : ''}>
       <span class="event-time">${fmtHour(e.start)} – ${fmtHour(e.end)}</span>
       <div class="event-color" style="background:${EVENT_COLORS[e.cat]}"></div>
       <div style="flex:1; min-width:0;">
         <div style="font-weight:500; font-size:13.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(e.title)}</div>
-        <div style="font-size:11.5px; color:var(--text-muted);">${catLabel(e.cat)}</div>
+        <div style="font-size:11.5px; color:var(--text-muted);">${catLabel(e.cat)}${linked.length ? ' · 🔗 ' + linked.length + ' tâche' + (linked.length>1?'s':'') : ''}</div>
       </div>
-    </div>
-  `).join('') : '<div class="quick-empty">Aucun événement prévu aujourd\'hui</div>';
+    </div>`;
+  }).join('') : '<div class="quick-empty">Aucun événement prévu aujourd\'hui</div>';
 
   // Music preview
   renderHomeMusic();
@@ -2949,6 +3425,11 @@ document.getElementById('homeMusic').addEventListener('click', (e) => {
 });
 document.getElementById('miniPlayBtn').addEventListener('click', (e) => {
   e.stopPropagation();
+  if (user.integrations?.spotify?.accessToken) {
+    if (user.realMusic?.playing) spotifyPause();
+    else spotifyResume();
+    return;
+  }
   user.music.playing = !user.music.playing;
   saveRoot();
   renderMusic(); renderHomeMusic();
@@ -3081,18 +3562,42 @@ function renderTodoList() {
   }
   list.classList.remove('empty');
   const todayS = todayStr();
+  const upcomingEvents = getUpcomingEventsForPicker();
   list.innerHTML = tasks.map(t => {
     const proj = user.projects?.find(p => p.id === t.project);
     const isOverdue = !t.done && t.date < todayS;
     const isPendingDelete = pendingDeleteId === t.id;
+    const isPendingLink = pendingLinkId === t.id;
     const carried = !t.done && t.originalDate && t.originalDate < todayS;
-    const actions = isPendingDelete ? `
+    const linkedEvent = findEventById(t.eventId);
+    let actions;
+    if (isPendingDelete) {
+      actions = `
       <div class="delete-confirm">
         <span class="delete-confirm-label">Supprimer ?</span>
         <button class="btn btn-mini" data-action="cancel-delete" type="button">Annuler</button>
         <button class="btn btn-mini btn-danger" data-action="confirm-delete" type="button">Supprimer</button>
-      </div>` : `
+      </div>`;
+    } else if (isPendingLink) {
+      const opts = ['<option value="">— Aucun événement —</option>']
+        .concat(upcomingEvents.map(e => {
+          const d = new Date(e.start);
+          const label = `${d.toLocaleDateString('fr-FR', { weekday:'short', day:'numeric', month:'short' })} · ${fmtHour(e.startH)} — ${escapeHtml(e.title)}`;
+          return `<option value="${escapeHtml(e.id)}" ${t.eventId === e.id ? 'selected' : ''}>${label}</option>`;
+        }));
+      const hasEvents = upcomingEvents.length > 0;
+      actions = `
+      <div class="link-picker">
+        ${hasEvents ? `<select class="link-picker-select" data-task="${t.id}">${opts.join('')}</select>` : '<span class="delete-confirm-label" style="color:var(--text-muted);">Aucun agenda connecté</span>'}
+        <button class="btn btn-mini" data-action="cancel-link" type="button">Annuler</button>
+        ${hasEvents ? `<button class="btn btn-mini btn-primary" data-action="confirm-link" type="button">Attacher</button>` : ''}
+      </div>`;
+    } else {
+      actions = `
       <div class="todo-actions">
+        <button class="icon-btn" data-action="link" title="Lier à un événement de l'agenda">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        </button>
         <button class="icon-btn" data-action="select" title="Lancer le chrono sur cette tâche">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
         </button>
@@ -3100,8 +3605,10 @@ function renderTodoList() {
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 01-2 2H9a2 2 0 01-2-2L5 6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
         </button>
       </div>`;
+    }
+    const eventChip = linkedEvent ? `<span class="event-chip" data-action="view-event" data-event-id="${escapeHtml(linkedEvent.id)}" title="Voir dans l'agenda"><span class="event-chip-dot" style="background:${EVENT_COLORS[linkedEvent.cat]||'#6366f1'}"></span>${fmtHour(linkedEvent.startH)} ${escapeHtml(linkedEvent.title.slice(0,40))}${linkedEvent.title.length>40?'…':''}<button class="event-chip-close" data-action="unlink" title="Détacher">×</button></span>` : '';
     return `
-    <div class="todo-item ${t.done ? 'done' : ''} ${t.id === user.activeTaskId ? 'active-work' : ''} ${isPendingDelete ? 'pending-delete' : ''}" draggable="true" data-id="${t.id}">
+    <div class="todo-item ${t.done ? 'done' : ''} ${t.id === user.activeTaskId ? 'active-work' : ''} ${isPendingDelete ? 'pending-delete' : ''} ${isPendingLink ? 'pending-link' : ''}" draggable="true" data-id="${t.id}">
       <div class="drag-handle" title="Glisser-déposer pour réorganiser">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>
       </div>
@@ -3113,6 +3620,7 @@ function renderTodoList() {
           ${proj ? `<span class="project-chip"><span class="pdot" style="background:${proj.color}"></span>${escapeHtml(proj.name)}</span>` : ''}
           ${t.estimate ? `<span>Est. ${fmtEstimate(t.estimate)}</span>` : ''}
           ${t.tracked ? `<span class="time-badge">⏱ ${fmtMinutes(t.tracked)}</span>` : ''}
+          ${eventChip}
           ${t.id === user.activeTaskId ? '<span class="chip chip-success"><span class="dot"></span>Sélectionnée</span>' : ''}
         </div>
       </div>
@@ -3124,11 +3632,19 @@ function renderTodoList() {
   list.querySelectorAll('.todo-item').forEach(el => {
     const id = el.dataset.id;
     el.addEventListener('click', (e) => {
-      const action = e.target.closest('[data-action]')?.dataset.action;
+      // Clicks inside the link picker (except its own [data-action] buttons) shouldn't select the task
+      if (e.target.closest('.link-picker') && !e.target.closest('[data-action]')) return;
+      const actionEl = e.target.closest('[data-action]');
+      const action = actionEl?.dataset.action;
       if (action === 'toggle') return toggleTask(id);
       if (action === 'delete') return deleteTask(id);
       if (action === 'cancel-delete') return cancelPendingDelete();
       if (action === 'confirm-delete') return confirmPendingDelete(id);
+      if (action === 'link') return openLinkPicker(id);
+      if (action === 'cancel-link') return cancelLinkPicker();
+      if (action === 'confirm-link') return confirmLinkPicker(id);
+      if (action === 'unlink') { e.stopPropagation(); return unlinkTaskFromEvent(id); }
+      if (action === 'view-event') { e.stopPropagation(); return jumpToEvent(actionEl.dataset.eventId); }
       if (action === 'select') return selectAndStart(id);
       selectActiveTask(id);
     });
@@ -3226,6 +3742,85 @@ function cancelPendingDelete() {
   clearTimeout(pendingDeleteTimeout);
   pendingDeleteId = null;
   renderTodoList();
+}
+
+/* ---- Liaison tâche ↔ événement agenda ---- */
+let pendingLinkId = null;
+
+function getUpcomingEventsForPicker() {
+  const real = mergedRealEvents();
+  if (!real) return [];
+  const now = Date.now();
+  const maxTs = now + 14 * 86400000;
+  return real
+    .filter(e => !e.allDay && new Date(e.end).getTime() >= now - 3600000 && new Date(e.start).getTime() <= maxTs)
+    .sort((a, b) => a.start.localeCompare(b.start))
+    .slice(0, 40);
+}
+
+function findEventById(eventId) {
+  if (!eventId) return null;
+  const real = mergedRealEvents();
+  if (!real) return null;
+  return real.find(e => e.id === eventId) || null;
+}
+
+function openLinkPicker(id) {
+  if (pendingDeleteId) cancelPendingDelete();
+  if (!mergedRealEvents()) {
+    toast('Connecte d\'abord un agenda (onglet Intégrations)', 'error');
+    return;
+  }
+  pendingLinkId = id;
+  renderTodoList();
+}
+function cancelLinkPicker() {
+  pendingLinkId = null;
+  renderTodoList();
+}
+function confirmLinkPicker(id) {
+  const select = document.querySelector(`.link-picker-select[data-task="${id}"]`);
+  if (!select) { pendingLinkId = null; renderTodoList(); return; }
+  const chosen = select.value || null;
+  const t = user.tasks.find(x => x.id === id);
+  if (!t) return;
+  const prev = t.eventId;
+  t.eventId = chosen;
+  pendingLinkId = null;
+  saveRoot();
+  renderTodoList();
+  renderAgenda();
+  renderHome();
+  scheduleAlerts();
+  if (chosen) {
+    const ev = findEventById(chosen);
+    toast(`🔗 Liée à « ${ev?.title || 'événement'} »`, 'success');
+  } else if (prev) {
+    toast('Événement détaché');
+  }
+}
+function unlinkTaskFromEvent(id) {
+  const t = user.tasks.find(x => x.id === id);
+  if (!t || !t.eventId) return;
+  t.eventId = null;
+  saveRoot();
+  renderTodoList();
+  renderAgenda();
+  renderHome();
+  toast('Événement détaché');
+}
+function jumpToEvent(eventId) {
+  if (!eventId) return;
+  goto('agenda');
+  // Flash the event visually
+  setTimeout(() => {
+    const el = document.querySelector(`.agenda-event[data-event-id="${CSS.escape(eventId)}"]`);
+    if (el) {
+      el.classList.add('flash');
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(() => el.classList.remove('flash'), 2000);
+    }
+  }, 200);
 }
 function selectActiveTask(id) {
   if (user.timer.startedAt) stopTimer(true);
@@ -3420,7 +4015,8 @@ function renderAgenda() {
   for (let h = 7; h < 21; h++) hours.push(h);
   let html = '<div class="agenda-hours-col">' + hours.map(h => `<div class="agenda-hour">${String(h).padStart(2,'0')}:00</div>`).join('') + '</div>';
 
-  const useReal = !!(user.realEvents && user.integrations?.google?.accessToken);
+  const realEvts = mergedRealEvents();
+  const useReal = !!realEvts;
   // The dow mapping in events uses 0=Sun..6=Sat. We need to display in Lun..Dim order.
   // Our displayed columns: i=0..6 -> days[i] which are Mon..Sun.
   days.forEach((d, i) => {
@@ -3428,11 +4024,11 @@ function renderAgenda() {
     const dayStr = todayStr(d);
     let evs;
     if (useReal) {
-      evs = user.realEvents.filter(e => {
+      evs = realEvts.filter(e => {
         const s = new Date(e.start);
         return todayStr(s) === dayStr && !e.allDay;
       }).map(e => ({
-        start: e.startH, end: e.endH, title: e.title, cat: e.cat
+        id: e.id, start: e.startH, end: e.endH, title: e.title, cat: e.cat, startISO: e.start
       }));
     } else {
       evs = user.events.filter(e => e.dow === dow0);
@@ -3444,9 +4040,13 @@ function renderAgenda() {
       const height = (e.end - e.start) * 60 - 2;
       if (top < 0 || top > (hours.length*60)) return;
       const color = EVENT_COLORS[e.cat] || '#6366f1';
-      html += `<div class="agenda-event" style="top:${top}px; height:${Math.max(height, 20)}px; background:${color};" title="${escapeHtml(e.title)}">
+      // Tasks linked to this event
+      const linked = e.id ? user.tasks.filter(t => t.eventId === e.id) : [];
+      const linkedHtml = linked.length ? `<div class="agenda-event-linked">🔗 ${linked.length} tâche${linked.length>1?'s':''}</div>` : '';
+      html += `<div class="agenda-event" style="top:${top}px; height:${Math.max(height, 20)}px; background:${color};" data-event-id="${escapeHtml(e.id||'')}" title="${escapeHtml(e.title)}">
         <div class="event-title">${escapeHtml(e.title)}</div>
         <div class="event-time">${fmtHour(e.start)} – ${fmtHour(e.end)}</div>
+        ${linkedHtml}
       </div>`;
     });
     // Today line
@@ -3640,10 +4240,67 @@ const tracks = [
   { title: "Sunflower", artist: "Post Malone, Swae Lee", album: "Spider-Man Soundtrack", duration: 158, color: "#eab308", emoji: "🌻" }
 ];
 
+let musicTab = 'queue'; // 'queue' | 'liked' | 'playlists'
+
+// Scopes required for the new music experience. If user's token was issued
+// before this upgrade, we'll prompt them to reconnect.
+const REQUIRED_SPOTIFY_SCOPES = [
+  'user-library-read',
+  'playlist-read-private',
+  'user-modify-playback-state'
+];
+
+function spotifyHasRequiredScopes() {
+  const s = user.integrations?.spotify;
+  if (!s?.accessToken) return true; // not connected, don't nag
+  if (!s.scope) return false; // old token, no scope recorded
+  const granted = s.scope.split(/\s+/);
+  return REQUIRED_SPOTIFY_SCOPES.every(x => granted.includes(x));
+}
+
 function renderMusic() {
   const real = user.realMusic;
-  const liveConnected = user.integrations?.spotify?.accessToken;
+  const liveConnected = !!user.integrations?.spotify?.accessToken;
   const albumArtEl = document.getElementById('albumArt');
+
+  // Update subtitle
+  const subtitleEl = document.getElementById('musicSubtitle');
+  if (subtitleEl) {
+    if (liveConnected) {
+      const name = user.spotifyProfile?.displayName || 'Spotify';
+      const badge = isPremium() ? '<span class="chip" style="background:rgba(29,185,84,0.15);color:#1db954;">PREMIUM</span>' : '<span class="chip">FREE</span>';
+      subtitleEl.innerHTML = `Connecté à <strong>${escapeHtml(name)}</strong> · ${badge}`;
+    } else {
+      subtitleEl.innerHTML = 'Mode démo · <span class="chip">DEMO</span>';
+    }
+  }
+
+  // Premium warning banner
+  const premiumWarnEl = document.getElementById('premiumWarn');
+  if (premiumWarnEl) {
+    premiumWarnEl.style.display = (liveConnected && user.spotifyProfile && !isPremium()) ? 'flex' : 'none';
+  }
+
+  // Reconnect banner for users with old tokens missing new scopes
+  const reconnectEl = document.getElementById('reconnectBanner');
+  if (reconnectEl) {
+    reconnectEl.style.display = (liveConnected && !spotifyHasRequiredScopes()) ? 'flex' : 'none';
+  }
+
+  // Device bar (rendered by updateDeviceUi())
+  updateDeviceUi();
+
+  // Tabs visibility: only show when connected
+  const tabsEl = document.getElementById('musicTabs');
+  if (tabsEl) tabsEl.style.display = liveConnected ? 'flex' : 'none';
+
+  // Update tab counts
+  const likedCountEl = document.getElementById('likedCount');
+  if (likedCountEl) likedCountEl.textContent = user.realSpotifyLiked?.length ? `· ${user.realSpotifyLiked.length}` : '';
+  const playlistsCountEl = document.getElementById('playlistsCount');
+  if (playlistsCountEl) playlistsCountEl.textContent = user.realSpotifyPlaylists?.length ? `· ${user.realSpotifyPlaylists.length}` : '';
+
+  // Now playing card
   if (liveConnected && real && !real.empty) {
     if (real.albumArt) {
       albumArtEl.style.background = `center/cover url('${real.albumArt}')`;
@@ -3659,33 +4316,55 @@ function renderMusic() {
     const pct = real.durationMs ? (real.progressMs / real.durationMs * 100) : 0;
     document.getElementById('progressBar').style.width = `${pct.toFixed(1)}%`;
     document.getElementById('playIcon').innerHTML = real.playing ? '<path d="M6 5h4v14H6zm8 0h4v14h-4z"/>' : '<path d="M8 5v14l11-7z"/>';
-    document.getElementById('queueList').innerHTML = '<div style="padding: 20px; text-align:center; color:var(--text-muted); font-size:13px;">File d\'attente disponible dans l\'app Spotify</div>';
-    return;
-  }
-  if (liveConnected && real?.empty) {
+  } else if (liveConnected && real?.empty) {
     albumArtEl.textContent = '🎧';
     albumArtEl.style.background = 'linear-gradient(135deg, #6b7280, #374151)';
     document.getElementById('nowTitle').textContent = 'Aucune lecture en cours';
-    document.getElementById('nowArtist').textContent = 'Ouvre Spotify pour lancer une musique';
+    document.getElementById('nowArtist').textContent = 'Choisis un titre ci-dessous pour démarrer';
     document.getElementById('progressTotal').textContent = '—';
     document.getElementById('progressNow').textContent = '—';
     document.getElementById('progressBar').style.width = '0%';
     document.getElementById('playIcon').innerHTML = '<path d="M8 5v14l11-7z"/>';
-    document.getElementById('queueList').innerHTML = '<div style="padding: 20px; text-align:center; color:var(--text-muted); font-size:13px;">Démarre la lecture dans Spotify pour afficher la file</div>';
+  } else {
+    // Demo mode
+    const m = user.music;
+    const t = tracks[m.currentTrackIdx];
+    albumArtEl.textContent = t.emoji;
+    albumArtEl.style.background = `linear-gradient(135deg, ${t.color}, rgba(0,0,0,0.2))`;
+    document.getElementById('nowTitle').textContent = t.title;
+    document.getElementById('nowArtist').textContent = `${t.artist} · ${t.album}`;
+    document.getElementById('progressTotal').textContent = fmtTrackTime(t.duration);
+    document.getElementById('progressNow').textContent = fmtTrackTime(m.progressSec);
+    document.getElementById('progressBar').style.width = `${(m.progressSec/t.duration*100).toFixed(1)}%`;
+    document.getElementById('playIcon').innerHTML = m.playing ? '<path d="M6 5h4v14H6zm8 0h4v14h-4z"/>' : '<path d="M8 5v14l11-7z"/>';
+  }
+
+  // Render the active tab panel
+  const tab = liveConnected ? musicTab : 'queue';
+  const panels = {
+    queue: document.getElementById('tabPanelQueue'),
+    liked: document.getElementById('tabPanelLiked'),
+    playlists: document.getElementById('tabPanelPlaylists')
+  };
+  Object.entries(panels).forEach(([k, el]) => { if (el) el.style.display = (k === tab) ? '' : 'none'; });
+  document.querySelectorAll('#musicTabs .music-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tab === tab);
+  });
+
+  if (tab === 'queue') renderQueuePanel(liveConnected);
+  else if (tab === 'liked') renderLikedPanel();
+  else if (tab === 'playlists') renderPlaylistsPanel();
+}
+
+function renderQueuePanel(liveConnected) {
+  const queueEl = document.getElementById('queueList');
+  if (!queueEl) return;
+  if (liveConnected) {
+    queueEl.innerHTML = '<div style="padding: 20px; text-align:center; color:var(--text-muted); font-size:13px;">File d\'attente disponible dans l\'app Spotify — la lecture en cours est synchronisée ci-dessus</div>';
     return;
   }
   const m = user.music;
-  const t = tracks[m.currentTrackIdx];
-  document.getElementById('albumArt').textContent = t.emoji;
-  document.getElementById('albumArt').style.background = `linear-gradient(135deg, ${t.color}, rgba(0,0,0,0.2))`;
-  document.getElementById('nowTitle').textContent = t.title;
-  document.getElementById('nowArtist').textContent = `${t.artist} · ${t.album}`;
-  document.getElementById('progressTotal').textContent = fmtTrackTime(t.duration);
-  document.getElementById('progressNow').textContent = fmtTrackTime(m.progressSec);
-  document.getElementById('progressBar').style.width = `${(m.progressSec/t.duration*100).toFixed(1)}%`;
-  document.getElementById('playIcon').innerHTML = m.playing ? '<path d="M6 5h4v14H6zm8 0h4v14h-4z"/>' : '<path d="M8 5v14l11-7z"/>';
-
-  document.getElementById('queueList').innerHTML = tracks.map((t2, i) => i === m.currentTrackIdx ? '' : `
+  queueEl.innerHTML = tracks.map((t2, i) => i === m.currentTrackIdx ? '' : `
     <div class="queue-item" data-idx="${i}">
       <div class="queue-num">${i+1}</div>
       <div class="queue-art" style="background:linear-gradient(135deg, ${t2.color}, rgba(0,0,0,0.2))">${t2.emoji}</div>
@@ -3697,7 +4376,7 @@ function renderMusic() {
       <div class="queue-time">${fmtTrackTime(t2.duration)}</div>
     </div>
   `).join('');
-  document.querySelectorAll('.queue-item').forEach(el => {
+  queueEl.querySelectorAll('.queue-item').forEach(el => {
     el.addEventListener('click', () => {
       user.music.currentTrackIdx = parseInt(el.dataset.idx);
       user.music.progressSec = 0;
@@ -3707,14 +4386,166 @@ function renderMusic() {
     });
   });
 }
+
+function renderLikedPanel() {
+  const grid = document.getElementById('likedGrid');
+  if (!grid) return;
+  const liked = user.realSpotifyLiked;
+  if (!liked) {
+    grid.innerHTML = '<div class="music-empty"><div style="font-size:32px;">⏳</div><h3>Chargement de tes favoris…</h3><p>Ça ne devrait prendre qu\'un instant</p></div>';
+    fetchSpotifyLiked();
+    return;
+  }
+  if (liked.length === 0) {
+    grid.innerHTML = '<div class="music-empty"><div style="font-size:32px;">💚</div><h3>Aucun morceau liké</h3><p>Aime des titres dans Spotify pour les voir ici</p></div>';
+    return;
+  }
+  grid.innerHTML = liked.map(t => `
+    <div class="music-card" data-uri="${escapeHtml(t.uri)}" data-kind="track">
+      <div class="music-card-cover" ${t.albumArt ? `style="background-image:url('${t.albumArt}')"` : ''}>${t.albumArt ? '' : '🎵'}</div>
+      <div class="music-card-play">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      </div>
+      <div class="music-card-title" title="${escapeHtml(t.name)}">${escapeHtml(t.name)}</div>
+      <div class="music-card-sub" title="${escapeHtml(t.artists)}">${escapeHtml(t.artists)}</div>
+    </div>
+  `).join('');
+  grid.querySelectorAll('.music-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const uri = card.dataset.uri;
+      spotifyPlay({ uris: [uri] });
+      toast('▶ Lecture en cours…');
+    });
+  });
+}
+
+function renderPlaylistsPanel() {
+  const grid = document.getElementById('playlistsGrid');
+  if (!grid) return;
+  const pls = user.realSpotifyPlaylists;
+  if (!pls) {
+    grid.innerHTML = '<div class="music-empty"><div style="font-size:32px;">⏳</div><h3>Chargement de tes playlists…</h3><p>Ça ne devrait prendre qu\'un instant</p></div>';
+    fetchSpotifyPlaylists();
+    return;
+  }
+  if (pls.length === 0) {
+    grid.innerHTML = '<div class="music-empty"><div style="font-size:32px;">📻</div><h3>Aucune playlist</h3><p>Crée-toi une playlist dans Spotify pour la voir ici</p></div>';
+    return;
+  }
+  grid.innerHTML = pls.map(p => `
+    <div class="music-card" data-uri="${escapeHtml(p.uri)}" data-kind="playlist">
+      <div class="music-card-cover" ${p.image ? `style="background-image:url('${p.image}')"` : ''}>${p.image ? '' : '📻'}</div>
+      <div class="music-card-play">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      </div>
+      <div class="music-card-title" title="${escapeHtml(p.name)}">${escapeHtml(p.name)}</div>
+      <div class="music-card-sub">${p.tracksCount} titres · ${escapeHtml(p.owner)}</div>
+    </div>
+  `).join('');
+  grid.querySelectorAll('.music-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const uri = card.dataset.uri;
+      spotifyPlay({ context_uri: uri });
+      toast('▶ Lecture de la playlist…');
+    });
+  });
+}
+
+function updateDeviceUi() {
+  const bar = document.getElementById('deviceBar');
+  if (!bar) return;
+  const liveConnected = !!user.integrations?.spotify?.accessToken;
+  const devices = user.realSpotifyDevices || [];
+  if (!liveConnected || devices.length === 0) {
+    bar.style.display = 'none';
+    return;
+  }
+  bar.style.display = 'flex';
+  const chips = devices.map(d => `
+    <button class="device-chip ${d.is_active ? 'active' : ''}" data-device-id="${escapeHtml(d.id)}" title="${escapeHtml(d.type)}">
+      <span class="dot"></span>
+      ${escapeHtml(d.name)}
+    </button>
+  `).join('');
+  bar.innerHTML = `<span class="device-label">🎧 Appareils</span>${chips}`;
+  bar.querySelectorAll('.device-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const id = chip.dataset.deviceId;
+      const wasPlaying = user.realMusic?.playing;
+      spotifyTransferTo(id, !!wasPlaying);
+      toast('🎧 Basculement sur ' + chip.textContent.trim() + '…');
+    });
+  });
+}
+
 function fmtTrackTime(s) { return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`; }
 
-document.getElementById('playBtn').addEventListener('click', () => { user.music.playing = !user.music.playing; saveRoot(); renderMusic(); renderHomeMusic(); });
-document.getElementById('nextTrackBtn').addEventListener('click', () => { user.music.currentTrackIdx = (user.music.currentTrackIdx+1) % tracks.length; user.music.progressSec = 0; saveRoot(); renderMusic(); renderHomeMusic(); });
-document.getElementById('prevTrackBtn').addEventListener('click', () => { user.music.currentTrackIdx = (user.music.currentTrackIdx - 1 + tracks.length) % tracks.length; user.music.progressSec = 0; saveRoot(); renderMusic(); renderHomeMusic(); });
+// --- Playback control handlers: gated on Spotify connection ---
+document.getElementById('playBtn').addEventListener('click', () => {
+  if (user.integrations?.spotify?.accessToken) {
+    if (user.realMusic?.playing) spotifyPause();
+    else spotifyResume();
+    return;
+  }
+  user.music.playing = !user.music.playing;
+  saveRoot();
+  renderMusic();
+  renderHomeMusic();
+});
+document.getElementById('nextTrackBtn').addEventListener('click', () => {
+  if (user.integrations?.spotify?.accessToken) {
+    spotifyNext();
+    return;
+  }
+  user.music.currentTrackIdx = (user.music.currentTrackIdx+1) % tracks.length;
+  user.music.progressSec = 0;
+  saveRoot();
+  renderMusic();
+  renderHomeMusic();
+});
+document.getElementById('prevTrackBtn').addEventListener('click', () => {
+  if (user.integrations?.spotify?.accessToken) {
+    spotifyPrevious();
+    return;
+  }
+  user.music.currentTrackIdx = (user.music.currentTrackIdx - 1 + tracks.length) % tracks.length;
+  user.music.progressSec = 0;
+  saveRoot();
+  renderMusic();
+  renderHomeMusic();
+});
+
+// Tab switching
+document.getElementById('musicTabs').addEventListener('click', (e) => {
+  const btn = e.target.closest('.music-tab');
+  if (!btn) return;
+  musicTab = btn.dataset.tab;
+  renderMusic();
+});
+
+// Reconnect Spotify button
+document.getElementById('reconnectSpotifyBtn')?.addEventListener('click', () => {
+  if (typeof connectSpotify === 'function') connectSpotify();
+});
 
 setInterval(() => {
-  if (!user || !user.music.playing) return;
+  if (!user) return;
+  // When Spotify is connected, progression is synced via polling fetchSpotifyCurrent()
+  if (user.integrations?.spotify?.accessToken) {
+    // Smooth local progression between poll ticks (15s) so the progress bar feels live
+    const real = user.realMusic;
+    if (real && !real.empty && real.playing && typeof real.progressMs === 'number' && typeof real.durationMs === 'number') {
+      real.progressMs = Math.min(real.durationMs, real.progressMs + 1000);
+      const nowEl = document.getElementById('progressNow');
+      if (nowEl) nowEl.textContent = fmtTrackTime(Math.round(real.progressMs/1000));
+      const barEl = document.getElementById('progressBar');
+      if (barEl) barEl.style.width = `${(real.progressMs/real.durationMs*100).toFixed(1)}%`;
+      const miniProg = document.getElementById('miniProgress');
+      if (miniProg) miniProg.style.width = `${(real.progressMs/real.durationMs*100).toFixed(1)}%`;
+    }
+    return;
+  }
+  if (!user.music.playing) return;
   user.music.progressSec += 1;
   const t = tracks[user.music.currentTrackIdx];
   if (user.music.progressSec >= t.duration) {
@@ -3837,6 +4668,16 @@ async function sha256Challenge(str) {
   return b64urlEncode(hash);
 }
 
+const SPOTIFY_SCOPES = [
+  'user-read-currently-playing',
+  'user-read-playback-state',
+  'user-modify-playback-state',
+  'user-read-recently-played',
+  'user-library-read',
+  'playlist-read-private',
+  'playlist-read-collaborative'
+].join(' ');
+
 async function connectSpotify() {
   if (!root.config.spotifyClientId) {
     toast('Ajoute ton Spotify Client ID avant', 'error');
@@ -3850,10 +4691,11 @@ async function connectSpotify() {
   const challenge = await sha256Challenge(verifier);
   sessionStorage.setItem('spotify_verifier', verifier);
   sessionStorage.setItem('spotify_user', root.currentUserId);
+  toast('Redirection vers Spotify…');
   const params = new URLSearchParams({
     response_type: 'code',
     client_id: root.config.spotifyClientId,
-    scope: 'user-read-currently-playing user-read-playback-state user-read-recently-played',
+    scope: SPOTIFY_SCOPES,
     redirect_uri: root.config.redirectUri,
     code_challenge_method: 'S256',
     code_challenge: challenge,
@@ -3890,12 +4732,29 @@ async function handleSpotifyCallback() {
       targetUser.integrations.spotify = {
         accessToken: data.access_token,
         refreshToken: data.refresh_token,
-        expiresAt: Date.now() + (data.expires_in * 1000) - 60000
+        expiresAt: Date.now() + (data.expires_in * 1000) - 60000,
+        scope: data.scope || SPOTIFY_SCOPES
       };
       saveRoot();
+      // Best-effort: fetch profile right away to know if the user is Premium
+      try {
+        const profRes = await fetch('https://api.spotify.com/v1/me', {
+          headers: { Authorization: `Bearer ${data.access_token}` }
+        });
+        if (profRes.ok) {
+          const prof = await profRes.json();
+          targetUser.spotifyProfile = {
+            displayName: prof.display_name,
+            product: prof.product, // 'premium' | 'free' | 'open'
+            country: prof.country,
+            id: prof.id
+          };
+          saveRoot();
+        }
+      } catch (_) {}
       toast('Spotify connecté ✓', 'success');
     } else {
-      toast('Échec connexion Spotify', 'error');
+      toast('Échec connexion Spotify — ' + (data.error_description || data.error || 'inconnue'), 'error');
     }
   } catch (e) {
     toast('Erreur Spotify: ' + e.message, 'error');
@@ -4077,8 +4936,188 @@ function startSpotifyPolling() {
   if (spotifyPollInterval) clearInterval(spotifyPollInterval);
   if (user.integrations?.spotify?.accessToken) {
     fetchSpotifyCurrent();
-    spotifyPollInterval = setInterval(fetchSpotifyCurrent, 15000);
+    fetchSpotifyDevices();
+    spotifyPollInterval = setInterval(() => {
+      fetchSpotifyCurrent();
+      fetchSpotifyDevices();
+    }, 15000);
+    // Library is larger — fetch once at connect, refresh when user visits Music tab
+    if (!user.realSpotifyLiked) fetchSpotifyLiked();
+    if (!user.realSpotifyPlaylists) fetchSpotifyPlaylists();
+    if (!user.spotifyProfile) fetchSpotifyProfile();
   }
+}
+
+/* --- Typed wrapper around Spotify API with token refresh + error mapping --- */
+async function spotifyApi(path, { method = 'GET', body, contentType = 'application/json' } = {}) {
+  const s = user.integrations?.spotify;
+  if (!s?.accessToken) throw new Error('Non connecté');
+  if (Date.now() >= s.expiresAt) {
+    const ok = await refreshSpotifyToken();
+    if (!ok) throw new Error('Session expirée — reconnecte Spotify');
+  }
+  const url = path.startsWith('http') ? path : `https://api.spotify.com/v1${path}`;
+  const headers = { Authorization: `Bearer ${user.integrations.spotify.accessToken}` };
+  if (body) headers['Content-Type'] = contentType;
+  const res = await fetch(url, {
+    method,
+    headers,
+    body: body ? (typeof body === 'string' ? body : JSON.stringify(body)) : undefined
+  });
+  if (res.status === 204) return null;
+  if (res.status === 401) {
+    // Token invalid — try refresh then retry once
+    const ok = await refreshSpotifyToken();
+    if (ok) {
+      const retry = await fetch(url, {
+        method,
+        headers: { ...headers, Authorization: `Bearer ${user.integrations.spotify.accessToken}` },
+        body: body ? (typeof body === 'string' ? body : JSON.stringify(body)) : undefined
+      });
+      if (retry.status === 204) return null;
+      if (!retry.ok) throw await spotifyErrorFromResponse(retry);
+      return retry.json();
+    }
+    throw new Error('Session Spotify expirée');
+  }
+  if (!res.ok) throw await spotifyErrorFromResponse(res);
+  if (res.status === 202 || res.headers.get('content-length') === '0') return null;
+  const text = await res.text();
+  if (!text) return null;
+  try { return JSON.parse(text); } catch { return null; }
+}
+
+async function spotifyErrorFromResponse(res) {
+  let detail = '';
+  try { const j = await res.json(); detail = j?.error?.message || j?.error_description || ''; } catch {}
+  const e = new Error(detail || `HTTP ${res.status}`);
+  e.status = res.status;
+  e.detail = detail;
+  return e;
+}
+
+function isPremium() {
+  return user.spotifyProfile?.product === 'premium';
+}
+
+async function fetchSpotifyProfile() {
+  try {
+    const data = await spotifyApi('/me');
+    if (data) {
+      user.spotifyProfile = {
+        displayName: data.display_name,
+        product: data.product,
+        country: data.country,
+        id: data.id
+      };
+      saveRoot();
+      renderMusic();
+    }
+  } catch (_) {}
+}
+
+async function fetchSpotifyLiked() {
+  try {
+    const data = await spotifyApi('/me/tracks?limit=50');
+    if (!data?.items) return;
+    user.realSpotifyLiked = data.items.map(row => {
+      const t = row.track;
+      return {
+        id: t.id,
+        uri: t.uri,
+        name: t.name,
+        artists: t.artists.map(a => a.name).join(', '),
+        album: t.album.name,
+        albumArt: t.album.images?.[2]?.url || t.album.images?.[0]?.url || null,
+        durationMs: t.duration_ms,
+        addedAt: row.added_at
+      };
+    });
+    user.realSpotifyLikedFetched = Date.now();
+    saveRoot();
+    renderMusic();
+  } catch (_) {}
+}
+
+async function fetchSpotifyPlaylists() {
+  try {
+    const data = await spotifyApi('/me/playlists?limit=50');
+    if (!data?.items) return;
+    user.realSpotifyPlaylists = data.items.map(p => ({
+      id: p.id,
+      uri: p.uri,
+      name: p.name,
+      description: p.description || '',
+      image: p.images?.[0]?.url || null,
+      tracksCount: p.tracks?.total || 0,
+      owner: p.owner?.display_name || ''
+    }));
+    user.realSpotifyPlaylistsFetched = Date.now();
+    saveRoot();
+    renderMusic();
+  } catch (_) {}
+}
+
+async function fetchSpotifyDevices() {
+  try {
+    const data = await spotifyApi('/me/player/devices');
+    user.realSpotifyDevices = (data?.devices || []).map(d => ({
+      id: d.id, name: d.name, type: d.type, is_active: d.is_active, volume: d.volume_percent
+    }));
+    saveRoot();
+    updateDeviceUi();
+  } catch (_) {}
+}
+
+/* --- Playback control --- */
+async function spotifyPlay(opts = {}) {
+  try {
+    const { uris, context_uri, deviceId } = opts;
+    const path = deviceId ? `/me/player/play?device_id=${encodeURIComponent(deviceId)}` : '/me/player/play';
+    const body = {};
+    if (uris) body.uris = uris;
+    if (context_uri) body.context_uri = context_uri;
+    await spotifyApi(path, { method: 'PUT', body: Object.keys(body).length ? body : undefined });
+    setTimeout(fetchSpotifyCurrent, 400);
+  } catch (e) { handlePlaybackError(e); }
+}
+async function spotifyPause() {
+  try { await spotifyApi('/me/player/pause', { method: 'PUT' }); setTimeout(fetchSpotifyCurrent, 300); }
+  catch (e) { handlePlaybackError(e); }
+}
+async function spotifyResume() {
+  try { await spotifyApi('/me/player/play', { method: 'PUT' }); setTimeout(fetchSpotifyCurrent, 300); }
+  catch (e) { handlePlaybackError(e); }
+}
+async function spotifyNext() {
+  try { await spotifyApi('/me/player/next', { method: 'POST' }); setTimeout(fetchSpotifyCurrent, 500); }
+  catch (e) { handlePlaybackError(e); }
+}
+async function spotifyPrevious() {
+  try { await spotifyApi('/me/player/previous', { method: 'POST' }); setTimeout(fetchSpotifyCurrent, 500); }
+  catch (e) { handlePlaybackError(e); }
+}
+async function spotifyTransferTo(deviceId, startPlaying = true) {
+  try {
+    await spotifyApi('/me/player', { method: 'PUT', body: { device_ids: [deviceId], play: startPlaying } });
+    setTimeout(() => { fetchSpotifyCurrent(); fetchSpotifyDevices(); }, 500);
+  } catch (e) { handlePlaybackError(e); }
+}
+
+function handlePlaybackError(e) {
+  const msg = e.detail || e.message || '';
+  const isNoDevice = /no active device|NO_ACTIVE_DEVICE/i.test(msg) || e.status === 404;
+  const isPremiumBlock = /premium/i.test(msg) || e.status === 403;
+  if (isNoDevice) {
+    toast('🎧 Aucun appareil actif — ouvre Spotify (desktop, mobile ou web) puis réessaie', 'error');
+    fetchSpotifyDevices();
+    return;
+  }
+  if (isPremiumBlock) {
+    toast('Spotify Premium requis pour contrôler la lecture', 'error');
+    return;
+  }
+  toast('Spotify : ' + (msg || 'erreur'), 'error');
 }
 
 function refreshAllIntegrations() {
@@ -4086,7 +5125,360 @@ function refreshAllIntegrations() {
     fetchCalendarEvents();
     fetchGmailMessages();
   }
+  if (user.integrations?.ics?.url) {
+    refreshIcsCalendar();
+  }
   startSpotifyPolling();
+  scheduleAlerts();
+}
+
+/* ====================================================
+   ICS (iCal) DIRECT LINK — pas d'OAuth, juste une URL
+   ==================================================== */
+const ICS_PROXY = 'https://corsproxy.io/?';
+const ICS_REFRESH_INTERVAL = 10 * 60 * 1000; // 10 minutes
+let icsRefreshTimer = null;
+
+/* Unfold iCal lines (RFC 5545 §3.1) and return events as plain objects */
+function parseICS(text) {
+  const raw = text.replace(/\r\n/g, '\n');
+  // Unfold: lines starting with space/tab continue the previous line
+  const unfolded = raw.replace(/\n[ \t]/g, '');
+  const lines = unfolded.split('\n');
+  const events = [];
+  let cur = null;
+  for (const line of lines) {
+    if (line === 'BEGIN:VEVENT') { cur = {}; continue; }
+    if (line === 'END:VEVENT') {
+      if (cur && cur.DTSTART) events.push(cur);
+      cur = null;
+      continue;
+    }
+    if (!cur) continue;
+    const idx = line.indexOf(':');
+    if (idx < 0) continue;
+    const left = line.slice(0, idx);
+    const val = line.slice(idx + 1);
+    const semi = left.indexOf(';');
+    const key = semi < 0 ? left : left.slice(0, semi);
+    const params = {};
+    if (semi >= 0) {
+      left.slice(semi + 1).split(';').forEach(p => {
+        const eq = p.indexOf('=');
+        if (eq > 0) params[p.slice(0, eq).toUpperCase()] = p.slice(eq + 1);
+      });
+    }
+    // Decode common escapes
+    const v = val.replace(/\\n/g, '\n').replace(/\\,/g, ',').replace(/\\;/g, ';').replace(/\\\\/g, '\\');
+    cur[key] = v;
+    cur[key + '__P'] = params;
+  }
+  return events;
+}
+
+function parseICSDate(value, params) {
+  if (!value) return null;
+  if (/^\d{8}$/.test(value)) {
+    return { date: new Date(+value.slice(0,4), +value.slice(4,6)-1, +value.slice(6,8)), allDay: true };
+  }
+  const m = value.match(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})(Z?)$/);
+  if (!m) return null;
+  const [_, y, mo, d, h, mi, se, z] = m;
+  let date;
+  if (z === 'Z') {
+    date = new Date(Date.UTC(+y, +mo-1, +d, +h, +mi, +se));
+  } else {
+    // Floating or TZID — interpret as local time (good-enough approximation;
+    // full VTIMEZONE handling is out of scope for v1).
+    date = new Date(+y, +mo-1, +d, +h, +mi, +se);
+  }
+  return { date, allDay: false };
+}
+
+/* Expand a recurring event (RRULE) over the given window [from,to] (Date objects).
+   Minimal support: FREQ=DAILY, FREQ=WEEKLY (with BYDAY), FREQ=MONTHLY (BYMONTHDAY),
+   INTERVAL, UNTIL, COUNT. Returns array of { startDate, endDate } instances. */
+function expandRRULE(baseStart, baseEnd, rrule, exdates, from, to) {
+  if (!rrule) return [{ startDate: baseStart, endDate: baseEnd }];
+  const parts = {};
+  rrule.split(';').forEach(kv => {
+    const [k, v] = kv.split('=');
+    if (k) parts[k.toUpperCase()] = v;
+  });
+  const freq = parts.FREQ;
+  const interval = parseInt(parts.INTERVAL) || 1;
+  let until = null;
+  if (parts.UNTIL) {
+    const p = parseICSDate(parts.UNTIL);
+    if (p) until = p.date;
+  }
+  const count = parts.COUNT ? parseInt(parts.COUNT) : null;
+  const byday = parts.BYDAY ? parts.BYDAY.split(',') : null;
+  const bymonthday = parts.BYMONTHDAY ? parts.BYMONTHDAY.split(',').map(n=>parseInt(n)) : null;
+  const dowMap = { SU:0, MO:1, TU:2, WE:3, TH:4, FR:5, SA:6 };
+  const duration = baseEnd.getTime() - baseStart.getTime();
+  const out = [];
+  const maxIter = 1000;
+  const exSet = new Set((exdates || []).map(d => d.toISOString()));
+
+  function maybePush(d) {
+    if (d < from || d > to) return;
+    if (until && d > until) return;
+    if (exSet.has(d.toISOString())) return;
+    out.push({ startDate: new Date(d), endDate: new Date(d.getTime() + duration) });
+  }
+
+  if (freq === 'DAILY') {
+    let d = new Date(baseStart), n = 0;
+    while (d <= to && n < maxIter) {
+      if (count && out.length >= count) break;
+      maybePush(d);
+      d = new Date(d); d.setDate(d.getDate() + interval); n++;
+    }
+  } else if (freq === 'WEEKLY') {
+    const days = byday ? byday.map(d => dowMap[d.slice(-2)]).filter(n => n !== undefined) : [baseStart.getDay()];
+    let weekStart = new Date(baseStart);
+    weekStart.setDate(weekStart.getDate() - weekStart.getDay()); // sunday anchor
+    let iter = 0;
+    while (weekStart <= to && iter < maxIter) {
+      for (const dow of days) {
+        if (count && out.length >= count) break;
+        const candidate = new Date(weekStart);
+        candidate.setDate(weekStart.getDate() + dow);
+        candidate.setHours(baseStart.getHours(), baseStart.getMinutes(), baseStart.getSeconds());
+        if (candidate >= baseStart) maybePush(candidate);
+      }
+      weekStart.setDate(weekStart.getDate() + 7 * interval);
+      iter++;
+    }
+  } else if (freq === 'MONTHLY') {
+    let d = new Date(baseStart), iter = 0;
+    while (d <= to && iter < maxIter) {
+      if (count && out.length >= count) break;
+      if (bymonthday) {
+        for (const mday of bymonthday) {
+          const candidate = new Date(d.getFullYear(), d.getMonth(), mday, baseStart.getHours(), baseStart.getMinutes(), baseStart.getSeconds());
+          if (candidate >= baseStart) maybePush(candidate);
+        }
+      } else {
+        if (d >= baseStart) maybePush(d);
+      }
+      d = new Date(d); d.setMonth(d.getMonth() + interval);
+      iter++;
+    }
+  } else {
+    out.push({ startDate: baseStart, endDate: baseEnd });
+  }
+  return out;
+}
+
+function icsEventsToDashboard(icsRaw) {
+  const from = new Date(Date.now() - 2 * 86400000);
+  const to = new Date(Date.now() + 21 * 86400000);
+  const events = [];
+  icsRaw.forEach(ev => {
+    const s = parseICSDate(ev.DTSTART, ev.DTSTART__P);
+    const e = parseICSDate(ev.DTEND, ev.DTEND__P);
+    if (!s) return;
+    const baseStart = s.date;
+    const baseEnd = e ? e.date : new Date(baseStart.getTime() + 3600000);
+    // EXDATE can be a list of date-times
+    const exdates = [];
+    Object.keys(ev).forEach(k => {
+      if (k.startsWith('EXDATE')) {
+        ev[k].split(',').forEach(v => {
+          const p = parseICSDate(v);
+          if (p) exdates.push(p.date);
+        });
+      }
+    });
+    const instances = expandRRULE(baseStart, baseEnd, ev.RRULE, exdates, from, to);
+    const isRecurring = !!ev.RRULE;
+    instances.forEach((inst, idx) => {
+      const start = inst.startDate;
+      const end = inst.endDate;
+      // Stable id: plain UID for single events, UID#YYYY-MM-DD for recurring
+      // (day-level stamp so a minor time change on the series doesn't break links).
+      const dayStamp = `${start.getFullYear()}-${String(start.getMonth()+1).padStart(2,'0')}-${String(start.getDate()).padStart(2,'0')}`;
+      const uid = ev.UID
+        ? (isRecurring ? `${ev.UID}#${dayStamp}` : ev.UID)
+        : `ics-${dayStamp}-${Math.random().toString(36).slice(2)}`;
+      events.push({
+        id: uid,
+        title: (ev.SUMMARY || '(sans titre)').trim(),
+        start: start.toISOString(),
+        end: end.toISOString(),
+        dow: start.getDay(),
+        startH: start.getHours() + start.getMinutes()/60,
+        endH: end.getHours() + end.getMinutes()/60,
+        cat: categorizeEvent(ev.SUMMARY || ''),
+        location: (ev.LOCATION || '').trim(),
+        description: (ev.DESCRIPTION || '').trim(),
+        allDay: s.allDay,
+        source: 'ics'
+      });
+    });
+  });
+  // Sort chronologically
+  events.sort((a, b) => a.start.localeCompare(b.start));
+  return events;
+}
+
+async function fetchIcsRaw(url) {
+  // Try direct first (some hosts set CORS correctly), fallback to proxy.
+  try {
+    const r = await fetch(url, { cache: 'no-store' });
+    if (r.ok) {
+      const text = await r.text();
+      if (text && text.includes('BEGIN:VCALENDAR')) return text;
+    }
+  } catch (_) { /* fall through to proxy */ }
+  const proxied = ICS_PROXY + encodeURIComponent(url);
+  const r2 = await fetch(proxied, { cache: 'no-store' });
+  if (!r2.ok) throw new Error('HTTP ' + r2.status);
+  const text = await r2.text();
+  if (!text || !text.includes('BEGIN:VCALENDAR')) {
+    throw new Error('Réponse ICS invalide — vérifie l\'URL');
+  }
+  return text;
+}
+
+async function refreshIcsCalendar({ silent = true } = {}) {
+  const cfg = user.integrations?.ics;
+  if (!cfg?.url) return;
+  try {
+    if (!silent) toast('Synchronisation de l\'agenda…');
+    const text = await fetchIcsRaw(cfg.url);
+    const raw = parseICS(text);
+    const events = icsEventsToDashboard(raw);
+    user.icsEvents = events;
+    cfg.lastSync = Date.now();
+    cfg.lastError = null;
+    saveRoot();
+    renderIntegrationStatusChips();
+    renderIntegrationsUi();
+    renderAgenda();
+    renderHome();
+    scheduleAlerts();
+    if (!silent) toast(`${events.length} événements synchronisés ✓`, 'success');
+  } catch (e) {
+    if (cfg) {
+      cfg.lastError = e.message || String(e);
+      saveRoot();
+    }
+    renderIntegrationsUi();
+    if (!silent) toast('Échec sync ICS : ' + (e.message || 'inconnue'), 'error');
+  }
+}
+
+function startIcsRefreshLoop() {
+  if (icsRefreshTimer) clearInterval(icsRefreshTimer);
+  if (!user.integrations?.ics?.url) return;
+  icsRefreshTimer = setInterval(() => refreshIcsCalendar({ silent: true }), ICS_REFRESH_INTERVAL);
+}
+
+/* Renvoie la liste unifiée des événements "réels" pour la période demandée.
+   Priorité Google OAuth > ICS > events démo. */
+function mergedRealEvents() {
+  if (user.realEvents && user.integrations?.google?.accessToken) return user.realEvents;
+  if (user.icsEvents && user.integrations?.ics?.url) return user.icsEvents;
+  return null;
+}
+
+/* ====================================================
+   ALERTES — 5 min avant chaque réunion
+   ==================================================== */
+let alertsCheckTimer = null;
+const ALERTS_CHECK_INTERVAL = 30 * 1000; // toutes les 30 s
+
+function requestAlertPermission() {
+  if (!('Notification' in window)) return;
+  if (Notification.permission === 'granted' || Notification.permission === 'denied') return;
+  Notification.requestPermission().then(p => {
+    if (p === 'granted') toast('Notifications activées ✓', 'success');
+    else if (p === 'denied') toast('Notifications refusées — seules les alertes in-app seront visibles');
+  });
+}
+
+function effectiveLeadMinutes() {
+  return user.integrations?.ics?.leadMinutes
+    || user.alertPrefs?.leadMinutes
+    || 5;
+}
+
+function alertsEnabled() {
+  // Activé si au moins une source d'événements est configurée et que l'utilisateur n'a pas désactivé explicitement
+  const icsOn = user.integrations?.ics?.url && user.integrations?.ics?.alertsEnabled !== false;
+  const googleOn = user.integrations?.google?.accessToken && user.alertPrefs?.enabled !== false;
+  return icsOn || googleOn;
+}
+
+function checkAlerts() {
+  if (!user || !alertsEnabled()) return;
+  const evts = mergedRealEvents();
+  if (!evts) return;
+  const lead = effectiveLeadMinutes();
+  const now = Date.now();
+  const windowStart = now;
+  const windowEnd = now + lead * 60 * 1000 + 60 * 1000; // 1 min de grâce
+  user.firedAlerts = user.firedAlerts || [];
+  // Purge fired older than 48h to prevent unbounded growth
+  user.firedAlerts = user.firedAlerts.filter(f => (f.at || 0) > now - 48 * 3600 * 1000);
+  const fired = new Set(user.firedAlerts.map(f => f.id));
+  let touched = false;
+  evts.forEach(e => {
+    if (e.allDay) return;
+    const startTs = new Date(e.start).getTime();
+    const fireAt = startTs - lead * 60 * 1000;
+    if (fireAt <= now && startTs > now - 60 * 1000) {
+      if (!e.id || fired.has(e.id)) return;
+      fireEventAlert(e, lead);
+      user.firedAlerts.push({ id: e.id, at: now });
+      touched = true;
+    }
+  });
+  if (touched) saveRoot();
+}
+
+function fireEventAlert(ev, lead) {
+  const startLocal = new Date(ev.start).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  const msg = `« ${ev.title} » commence dans ${lead} min (${startLocal})`;
+  // Toast in-app toujours
+  toast('⏰ ' + msg, 'success');
+  // Notification OS si autorisée
+  if ('Notification' in window && Notification.permission === 'granted') {
+    try {
+      const n = new Notification('⏰ Dans ' + lead + ' min', {
+        body: ev.title + ' · ' + startLocal + (ev.location ? ' · ' + ev.location : ''),
+        tag: 'event-' + ev.id,
+        requireInteraction: false
+      });
+      n.onclick = () => { window.focus(); goto('agenda'); n.close(); };
+    } catch (e) { /* ignore */ }
+  }
+  // Démarrer le chrono si une tâche est liée à cet événement
+  const linked = user.tasks.find(t => t.eventId === ev.id && !t.done);
+  if (linked) {
+    setTimeout(() => {
+      // Petit délai avant le début de la réunion (à l'heure pile)
+      const delay = Math.max(0, new Date(ev.start).getTime() - Date.now());
+      setTimeout(() => {
+        if (!user.tasks.find(t => t.id === linked.id && !t.done)) return;
+        if (user.activeTaskId === linked.id && user.timer.startedAt) return;
+        selectActiveTask(linked.id);
+        startTimer();
+        toast(`▶ Chrono auto-lancé sur « ${linked.title} »`, 'success');
+      }, delay);
+    }, 0);
+  }
+}
+
+function scheduleAlerts() {
+  if (alertsCheckTimer) clearInterval(alertsCheckTimer);
+  if (!alertsEnabled()) return;
+  // Tick tout de suite pour ne rien rater au chargement, puis toutes les 30s
+  checkAlerts();
+  alertsCheckTimer = setInterval(checkAlerts, ALERTS_CHECK_INTERVAL);
 }
 
 /* ====================================================
@@ -4329,6 +5721,7 @@ document.addEventListener('keydown', (e) => {
 
   if (e.key === 'Escape') {
     if (pendingDeleteId) { cancelPendingDelete(); return; }
+    if (pendingLinkId) { cancelLinkPicker(); return; }
     if (focusOverlay.classList.contains('open')) { closeFocusMode(); return; }
     document.querySelectorAll('.modal-backdrop.open').forEach(m => {
       if (m.id !== 'onboardingModal') m.classList.remove('open');
@@ -4387,6 +5780,7 @@ document.addEventListener('keydown', (e) => {
    ==================================================== */
 function bootDashboard() {
   carryForwardUnfinishedTasks();
+  migrateUserSchema();
   renderProfile();
   renderHome();
   renderTodo();
@@ -4400,6 +5794,17 @@ function bootDashboard() {
     timerInterval = setInterval(renderTimer, 1000);
   }
   refreshAllIntegrations();
+  startIcsRefreshLoop();
+}
+
+/* Legacy users may miss newer fields — ensure they exist before rendering. */
+function migrateUserSchema() {
+  if (!user) return;
+  if (!user.integrations) user.integrations = { google: null, spotify: null };
+  if (user.integrations.ics === undefined) user.integrations.ics = null;
+  if (user.icsEvents === undefined) user.icsEvents = null;
+  if (!Array.isArray(user.firedAlerts)) user.firedAlerts = [];
+  if (!user.alertPrefs) user.alertPrefs = { enabled: true, leadMinutes: 5, soundsOn: true };
 }
 
 /* Auto-rollover unfinished tasks:
@@ -4436,14 +5841,19 @@ function carryForwardUnfinishedTasks() {
 }
 
 function renderIntegrationStatusChips() {
-  // Agenda status
+  // Agenda status — ICS ou Google OAuth
   const aChip = document.getElementById('agendaStatusChip');
   const g = user.integrations?.google;
+  const ics = user.integrations?.ics;
   if (aChip) {
     if (g && g.accessToken && Date.now() < g.expiresAt) {
       aChip.innerHTML = '<span class="google-dot"></span>Connecté à Google Calendar';
       aChip.style.background = '#ecfdf5';
       aChip.style.color = '#10b981';
+    } else if (ics?.url && Array.isArray(user.icsEvents)) {
+      aChip.innerHTML = `<span class="google-dot"></span>Connecté via lien iCal · ${user.icsEvents.length} événements`;
+      aChip.style.background = '#fef3c7';
+      aChip.style.color = '#92400e';
     } else {
       aChip.innerHTML = '<span class="google-dot" style="background:#9ca3af;"></span>Non connecté — données démo';
       aChip.style.background = '';
@@ -4451,7 +5861,7 @@ function renderIntegrationStatusChips() {
     }
   }
   const agendaAccount = document.getElementById('agendaAccount');
-  if (agendaAccount) agendaAccount.textContent = g?.email || user.profile.email || '';
+  if (agendaAccount) agendaAccount.textContent = g?.email || (ics?.url ? 'Lien iCal' : (user.profile.email || ''));
 
   // Emails subtitle
   const eSub = document.getElementById('emailsSubtitle');
