@@ -1696,6 +1696,51 @@
     border-color: rgba(239, 68, 68, 0.35);
     background: rgba(239, 68, 68, 0.03);
   }
+  .todo-item.pending-edit {
+    border-color: rgba(79, 70, 229, 0.35);
+    background: rgba(79, 70, 229, 0.04);
+  }
+  .time-edit {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 8px;
+    border-radius: var(--radius-md);
+    background: rgba(79, 70, 229, 0.06);
+    border: 1px solid rgba(79, 70, 229, 0.25);
+    animation: slideInFade 0.18s ease-out;
+  }
+  html[data-theme="dark"] .time-edit {
+    background: rgba(129, 140, 248, 0.1);
+    border-color: rgba(129, 140, 248, 0.3);
+  }
+  .time-edit-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--primary);
+    white-space: nowrap;
+  }
+  .priority-chip {
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.1s, box-shadow 0.15s;
+  }
+  .priority-chip:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(16, 24, 40, 0.08);
+  }
+  .priority-chip:active { transform: translateY(0); }
+  .time-badge[data-action="edit-time"] {
+    cursor: pointer;
+    border-radius: 4px;
+    padding: 1px 5px;
+    margin: -1px -5px;
+    transition: background 0.12s;
+  }
+  .time-badge[data-action="edit-time"]:hover {
+    background: var(--bg-soft);
+    color: var(--text);
+  }
   @keyframes slideInFade {
     from { opacity: 0; transform: translateX(4px); }
     to   { opacity: 1; transform: translateX(0); }
@@ -1983,8 +2028,22 @@
 <div class="modal-backdrop" id="onboardingModal">
   <div class="modal">
     <h2>Bienvenue sur ton workspace 👋</h2>
-    <p class="sub">Configure ton profil. Chaque utilisateur aura ses propres tâches, notes et paramètres, en toute indépendance.</p>
+    <p class="sub" id="onboardingSub">Configure ton profil. Chaque utilisateur aura ses propres tâches, notes et paramètres, en toute indépendance.</p>
+
+    <!-- Liste des utilisateurs déjà connus (apparaît si root.users non vide) -->
+    <div id="onboardingExisting" style="display:none; margin-bottom: 22px;">
+      <div style="font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted); margin-bottom:8px;">Reprendre un profil existant</div>
+      <div class="user-list" id="onboardingUserList" style="max-height: 220px;"></div>
+      <div class="modal-separator"></div>
+      <div style="font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted); margin-bottom:8px;">Ou crée un nouveau profil</div>
+    </div>
+
     <form id="onboardingForm">
+      <div class="form-row">
+        <label>Adresse email <span style="color:var(--text-faint); font-weight:400;">(sert d'identifiant pour retrouver ton workspace)</span></label>
+        <input type="email" id="onbEmail" placeholder="ex: prenom.nom@example.com" required />
+        <div class="hint" id="onbEmailMatchHint" style="font-size:12px; margin-top:6px; display:none; color:var(--primary); font-weight:500;"></div>
+      </div>
       <div class="form-row">
         <label>Prénom</label>
         <input type="text" id="onbFirstName" placeholder="Ex: Baptiste" required />
@@ -1998,9 +2057,16 @@
         <input type="text" id="onbRole" placeholder="Ex: Product Manager" required />
       </div>
       <div class="modal-actions">
-        <button type="submit" class="btn btn-primary btn-block">Créer mon workspace →</button>
+        <button type="submit" class="btn btn-primary btn-block" id="onbSubmitBtn">Créer mon workspace →</button>
       </div>
     </form>
+
+    <div class="modal-separator"></div>
+    <div style="text-align:center;">
+      <p style="font-size:12.5px; color:var(--text-muted); margin: 0 0 10px;">Tu as déjà un export de ton workspace ?</p>
+      <button type="button" class="btn btn-sm" id="onbImportBtn">📂 Importer un fichier de sauvegarde</button>
+      <input type="file" id="onbImportFile" accept="application/json,.json" style="display:none;" />
+    </div>
   </div>
 </div>
 
@@ -2020,6 +2086,11 @@
     <!-- PROFILE TAB -->
     <div class="tab-pane active" data-pane="profile">
       <div class="form-row">
+        <label>Adresse email <span style="color:var(--text-faint); font-weight:400;">(identifiant unique)</span></label>
+        <input type="email" id="setEmail" />
+        <div class="hint" style="font-size:11.5px; color:var(--text-faint); margin-top:4px;">Si tu réinstalles ou changes de fichier, saisir le même email te permettra de retrouver ton workspace.</div>
+      </div>
+      <div class="form-row">
         <label>Prénom</label>
         <input type="text" id="setFirstName" />
       </div>
@@ -2030,6 +2101,16 @@
       <div class="form-row">
         <label>Poste</label>
         <input type="text" id="setRole" />
+      </div>
+
+      <div class="config-section" style="margin-top:18px;">
+        <h4>📦 Sauvegarde / restauration des données</h4>
+        <p style="font-size:12.5px; color:var(--text-muted); margin: 0 0 12px;">Exporte un fichier JSON contenant <b>tous</b> tes utilisateurs et leurs données. Tu pourras l'importer dans un autre fichier ou navigateur pour tout retrouver.</p>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button type="button" class="btn btn-sm btn-primary" id="exportWorkspaceBtn">📥 Exporter mon workspace</button>
+          <button type="button" class="btn btn-sm" id="importWorkspaceBtn">📂 Importer une sauvegarde</button>
+          <input type="file" id="importWorkspaceFile" accept="application/json,.json" style="display:none;" />
+        </div>
       </div>
     </div>
 
@@ -2173,6 +2254,10 @@
     <p class="sub">Crée un workspace indépendant pour un autre utilisateur.</p>
     <form id="newUserForm">
       <div class="form-row">
+        <label>Email <span style="color:var(--text-faint); font-weight:400;">(identifiant unique)</span></label>
+        <input type="email" id="nuEmail" required />
+      </div>
+      <div class="form-row">
         <label>Prénom</label>
         <input type="text" id="nuFirstName" required />
       </div>
@@ -2221,7 +2306,6 @@
           <tr>
             <th>Date</th>
             <th>Tâche</th>
-            <th>Projet</th>
             <th>Priorité</th>
             <th>Statut</th>
             <th style="text-align:right;">Estimé</th>
@@ -2457,9 +2541,6 @@
                 <option value="high">🔴 Haute</option>
                 <option value="medium" selected>🟡 Moyenne</option>
                 <option value="low">🔵 Basse</option>
-              </select>
-              <select id="newTaskProject" title="Projet">
-                <option value="">Projet…</option>
               </select>
               <div class="estimate-group" title="Estimation du temps (heures et minutes)">
                 <input type="number" id="newTaskEstimateH" placeholder="0" min="0" max="24" aria-label="Heures" />
@@ -2970,7 +3051,12 @@ function selectUser(userId) {
 
 function createUser(profile) {
   const id = uid();
-  profile.email = (profile.firstName.toLowerCase()+profile.lastName.toLowerCase()+'@gmail.com').replace(/[^a-z@.]/g,'');
+  // Si email fourni, on le respecte ; sinon on en synthétise un (compat ancienne code).
+  if (!profile.email) {
+    profile.email = (profile.firstName.toLowerCase()+profile.lastName.toLowerCase()+'@gmail.com').replace(/[^a-z@.]/g,'');
+  } else {
+    profile.email = profile.email.trim().toLowerCase();
+  }
   root.users[id] = buildNewUser(profile);
   root.currentUserId = id;
   user = root.users[id];
@@ -3027,27 +3113,222 @@ const onboardingModal = document.getElementById('onboardingModal');
 const settingsModal = document.getElementById('settingsModal');
 const newUserModal = document.getElementById('newUserModal');
 
+/* ---- Helpers onboarding (utilisateurs existants + match par email) ---- */
+function findUserIdByEmail(emailRaw) {
+  if (!emailRaw) return null;
+  const e = emailRaw.trim().toLowerCase();
+  if (!e) return null;
+  for (const [id, u] of Object.entries(root.users)) {
+    if ((u.profile?.email || '').trim().toLowerCase() === e) return id;
+  }
+  return null;
+}
+function prepareOnboardingModal() {
+  const existingBlock = document.getElementById('onboardingExisting');
+  const list = document.getElementById('onboardingUserList');
+  const ids = Object.keys(root.users);
+  if (ids.length === 0) {
+    existingBlock.style.display = 'none';
+    document.getElementById('onboardingSub').textContent = "Configure ton profil. Chaque utilisateur aura ses propres tâches, notes et paramètres, en toute indépendance.";
+  } else {
+    existingBlock.style.display = '';
+    document.getElementById('onboardingSub').textContent = "Reprends ton profil existant ou crée-en un nouveau. Tu peux aussi importer une sauvegarde JSON.";
+    list.innerHTML = ids.map(id => {
+      const u = root.users[id];
+      const full = `${u.profile.firstName || ''} ${u.profile.lastName || ''}`.trim() || '(sans nom)';
+      const role = u.profile.role || '';
+      const email = u.profile.email || '';
+      const taskCount = (u.tasks || []).length;
+      const noteCount = (u.notes || []).length;
+      return `
+        <div class="user-row" data-onb-uid="${id}">
+          <div class="user-avatar" style="background:${u.profile.avatarColor || '#4f46e5'}">${initials(full)}</div>
+          <div style="flex:1; min-width:0;">
+            <div class="name">${escapeHtml(full)}</div>
+            <div class="role">${escapeHtml(role)}${email ? ' · ' + escapeHtml(email) : ''}</div>
+            <div class="role" style="font-size:11px; color:var(--text-faint);">${taskCount} tâche${taskCount>1?'s':''} · ${noteCount} note${noteCount>1?'s':''}</div>
+          </div>
+          <div class="current-badge">CONTINUER →</div>
+        </div>
+      `;
+    }).join('');
+    list.querySelectorAll('[data-onb-uid]').forEach(row => {
+      row.addEventListener('click', () => {
+        const id = row.dataset.onbUid;
+        selectUser(id);
+        onboardingModal.classList.remove('open');
+        bootDashboard();
+        toast(`Reconnecté en tant que ${root.users[id].profile.firstName} 👋`, 'success');
+      });
+    });
+  }
+}
+
+/* Email-match en temps réel pendant la saisie */
+document.getElementById('onbEmail').addEventListener('input', (e) => {
+  const matched = findUserIdByEmail(e.target.value);
+  const hint = document.getElementById('onbEmailMatchHint');
+  const submitBtn = document.getElementById('onbSubmitBtn');
+  if (matched) {
+    const u = root.users[matched];
+    const full = `${u.profile.firstName} ${u.profile.lastName}`.trim();
+    hint.style.display = '';
+    hint.innerHTML = `✓ Profil existant trouvé : <b>${escapeHtml(full)}</b> — clic ci-dessous pour le reprendre`;
+    submitBtn.textContent = `Reprendre le workspace de ${u.profile.firstName} →`;
+    // Pré-remplir les autres champs au cas où l'utilisateur veut juste cliquer
+    document.getElementById('onbFirstName').value = u.profile.firstName || '';
+    document.getElementById('onbLastName').value = u.profile.lastName || '';
+    document.getElementById('onbRole').value = u.profile.role || '';
+  } else {
+    hint.style.display = 'none';
+    submitBtn.textContent = 'Créer mon workspace →';
+  }
+});
+
 document.getElementById('onboardingForm').addEventListener('submit', (e) => {
   e.preventDefault();
+  const email = document.getElementById('onbEmail').value.trim().toLowerCase();
   const firstName = document.getElementById('onbFirstName').value.trim();
   const lastName = document.getElementById('onbLastName').value.trim();
   const role = document.getElementById('onbRole').value.trim();
-  if (!firstName || !role) return;
-  createUser({ firstName, lastName, role });
+  if (!email || !firstName || !role) return;
+  // Si email déjà connu, on bascule vers ce profil au lieu d'en créer un nouveau
+  const matched = findUserIdByEmail(email);
+  if (matched) {
+    selectUser(matched);
+    onboardingModal.classList.remove('open');
+    bootDashboard();
+    toast(`Reconnecté en tant que ${root.users[matched].profile.firstName} 👋`, 'success');
+    return;
+  }
+  createUser({ firstName, lastName, role, email });
   onboardingModal.classList.remove('open');
   bootDashboard();
+});
+
+/* Import depuis l'écran d'onboarding */
+document.getElementById('onbImportBtn').addEventListener('click', () => {
+  document.getElementById('onbImportFile').click();
+});
+document.getElementById('onbImportFile').addEventListener('change', (e) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  importWorkspaceFromFile(file, () => {
+    onboardingModal.classList.remove('open');
+    bootDashboard();
+  });
+  e.target.value = '';
 });
 
 document.getElementById('openSettings').addEventListener('click', () => openSettings());
 document.getElementById('closeSettings').addEventListener('click', () => settingsModal.classList.remove('open'));
 document.getElementById('saveSettings').addEventListener('click', () => {
+  const newEmail = document.getElementById('setEmail').value.trim().toLowerCase();
+  // Vérifie qu'aucun autre utilisateur n'a déjà cet email
+  if (newEmail) {
+    const conflict = findUserIdByEmail(newEmail);
+    if (conflict && conflict !== root.currentUserId) {
+      alert("Cet email est déjà utilisé par un autre profil de ce workspace.");
+      return;
+    }
+  }
   user.profile.firstName = document.getElementById('setFirstName').value.trim();
   user.profile.lastName = document.getElementById('setLastName').value.trim();
   user.profile.role = document.getElementById('setRole').value.trim();
+  if (newEmail) user.profile.email = newEmail;
   saveRoot();
   settingsModal.classList.remove('open');
   renderProfile(); renderHome();
 });
+
+/* Export / Import du workspace complet (tous les utilisateurs) */
+document.getElementById('exportWorkspaceBtn').addEventListener('click', () => {
+  const data = JSON.stringify(root, null, 2);
+  const blob = new Blob([data], { type: 'application/json;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  const ts = new Date().toISOString().slice(0,10);
+  a.download = `workspace-backup-${ts}.json`;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 200);
+  toast('Sauvegarde téléchargée 📥', 'success');
+});
+document.getElementById('importWorkspaceBtn').addEventListener('click', () => {
+  document.getElementById('importWorkspaceFile').click();
+});
+document.getElementById('importWorkspaceFile').addEventListener('change', (e) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  importWorkspaceFromFile(file, () => {
+    settingsModal.classList.remove('open');
+    bootDashboard();
+  });
+  e.target.value = '';
+});
+
+function importWorkspaceFromFile(file, onSuccess) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+      if (!data || typeof data !== 'object' || !data.users || typeof data.users !== 'object') {
+        toast('Fichier invalide : structure non reconnue', 'error');
+        return;
+      }
+      const importedCount = Object.keys(data.users).length;
+      if (importedCount === 0) {
+        toast('Le fichier ne contient aucun utilisateur', 'error');
+        return;
+      }
+      const existingCount = Object.keys(root.users).length;
+      let mode = 'replace';
+      if (existingCount > 0) {
+        const ok = confirm(
+          `Importer la sauvegarde ?\n\n` +
+          `Le fichier contient ${importedCount} utilisateur${importedCount>1?'s':''}.\n` +
+          `Tu as actuellement ${existingCount} utilisateur${existingCount>1?'s':''} dans ce workspace.\n\n` +
+          `OK = REMPLACER tout (les profils actuels seront perdus).\n` +
+          `Annuler = FUSIONNER (ajouter les profils du fichier sans toucher aux tiens).`
+        );
+        mode = ok ? 'replace' : 'merge';
+      }
+      if (mode === 'replace') {
+        root = data;
+      } else {
+        // Merge : on ajoute les utilisateurs du fichier en évitant les collisions d'email
+        Object.entries(data.users).forEach(([id, importedU]) => {
+          const importedEmail = (importedU.profile?.email || '').trim().toLowerCase();
+          const existingId = importedEmail ? findUserIdByEmail(importedEmail) : null;
+          if (existingId) {
+            // Email déjà utilisé → on importe sous un nouvel id et on suffixe l'email
+            const newId = uid();
+            importedU.profile.email = importedEmail + '+' + newId.slice(0,4);
+            root.users[newId] = importedU;
+          } else {
+            root.users[id in root.users ? uid() : id] = importedU;
+          }
+        });
+        if (data.config) root.config = Object.assign(root.config || {}, data.config);
+      }
+      // S'assurer qu'on a un currentUserId valide
+      if (!root.currentUserId || !root.users[root.currentUserId]) {
+        root.currentUserId = Object.keys(root.users)[0];
+      }
+      // Toujours recaler le redirectUri sur la page courante
+      if (!root.config) root.config = {};
+      root.config.redirectUri = currentRedirectUri();
+      saveRoot();
+      user = root.users[root.currentUserId];
+      applyTheme();
+      toast(`Import réussi (${importedCount} profil${importedCount>1?'s':''}) ✓`, 'success');
+      if (typeof onSuccess === 'function') onSuccess();
+    } catch (err) {
+      toast('Erreur lecture JSON : ' + err.message, 'error');
+    }
+  };
+  reader.onerror = () => toast('Erreur de lecture du fichier', 'error');
+  reader.readAsText(file);
+}
 document.getElementById('deleteUserBtn').addEventListener('click', () => {
   if (Object.keys(root.users).length === 1) {
     alert("Impossible de supprimer le seul utilisateur. Crée-en un autre d'abord.");
@@ -3064,19 +3345,31 @@ document.getElementById('deleteUserBtn').addEventListener('click', () => {
 
 document.getElementById('addUserBtn').addEventListener('click', () => {
   newUserModal.classList.add('open');
+  document.getElementById('nuEmail').value = '';
   document.getElementById('nuFirstName').value = '';
   document.getElementById('nuLastName').value = '';
   document.getElementById('nuRole').value = '';
-  document.getElementById('nuFirstName').focus();
+  document.getElementById('nuEmail').focus();
 });
 document.getElementById('cancelNewUser').addEventListener('click', () => newUserModal.classList.remove('open'));
 document.getElementById('newUserForm').addEventListener('submit', (e) => {
   e.preventDefault();
+  const email = document.getElementById('nuEmail').value.trim().toLowerCase();
   const firstName = document.getElementById('nuFirstName').value.trim();
   const lastName = document.getElementById('nuLastName').value.trim();
   const role = document.getElementById('nuRole').value.trim();
-  if (!firstName || !role) return;
-  createUser({ firstName, lastName, role });
+  if (!email || !firstName || !role) return;
+  // Si email déjà utilisé, on bascule sur le profil existant
+  const matched = findUserIdByEmail(email);
+  if (matched) {
+    selectUser(matched);
+    newUserModal.classList.remove('open');
+    settingsModal.classList.remove('open');
+    bootDashboard();
+    toast(`Profil existant retrouvé : ${root.users[matched].profile.firstName}`, 'success');
+    return;
+  }
+  createUser({ firstName, lastName, role, email });
   newUserModal.classList.remove('open');
   settingsModal.classList.remove('open');
   bootDashboard();
@@ -3089,6 +3382,7 @@ document.getElementById('newUserForm').addEventListener('submit', (e) => {
 });
 
 function openSettings(tab) {
+  document.getElementById('setEmail').value = user.profile.email || '';
   document.getElementById('setFirstName').value = user.profile.firstName || '';
   document.getElementById('setLastName').value = user.profile.lastName || '';
   document.getElementById('setRole').value = user.profile.role || '';
@@ -3388,14 +3682,13 @@ function renderHome() {
     todayEventsForHome = user.events.filter(e => e.dow === dowToday).sort((a,b) => a.start - b.start);
   }
   ha.innerHTML = todayEventsForHome.length ? todayEventsForHome.slice(0,5).map(e => {
-    const linked = e.id ? user.tasks.filter(t => t.eventId === e.id && !t.done) : [];
     return `
     <div class="event-row" data-jump="agenda" ${e.id ? `data-event-id="${escapeHtml(e.id)}"` : ''}>
       <span class="event-time">${fmtHour(e.start)} – ${fmtHour(e.end)}</span>
       <div class="event-color" style="background:${EVENT_COLORS[e.cat]}"></div>
       <div style="flex:1; min-width:0;">
         <div style="font-weight:500; font-size:13.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(e.title)}</div>
-        <div style="font-size:11.5px; color:var(--text-muted);">${catLabel(e.cat)}${linked.length ? ' · 🔗 ' + linked.length + ' tâche' + (linked.length>1?'s':'') : ''}</div>
+        <div style="font-size:11.5px; color:var(--text-muted);">${catLabel(e.cat)}</div>
       </div>
     </div>`;
   }).join('') : '<div class="quick-empty">Aucun événement prévu aujourd\'hui</div>';
@@ -3503,9 +3796,8 @@ document.getElementById('addTaskForm').addEventListener('submit', e => {
   const m = parseInt(mEl.value) || 0;
   const totalMin = h * 60 + m;
   const estimate = totalMin > 0 ? totalMin : null;
-  const project = document.getElementById('newTaskProject').value || null;
   const maxOrder = Math.max(-1, ...user.tasks.filter(t => t.date === user.currentDate).map(t => t.order||0));
-  user.tasks.push({ id: uid(), order: maxOrder + 1, title, priority, date: user.currentDate, done: false, estimate, tracked: 0, project });
+  user.tasks.push({ id: uid(), order: maxOrder + 1, title, priority, date: user.currentDate, done: false, estimate, tracked: 0 });
   document.getElementById('newTaskTitle').value = '';
   hEl.value = '';
   mEl.value = '';
@@ -3521,15 +3813,6 @@ function fmtEstimate(min) {
   return `${m} min`;
 }
 
-function populateProjectSelect() {
-  const sel = document.getElementById('newTaskProject');
-  if (!sel || !user?.projects) return;
-  const current = sel.value;
-  sel.innerHTML = '<option value="">Projet…</option>' +
-    user.projects.map(p => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join('');
-  if (current) sel.value = current;
-}
-
 function renderTodo() {
   const d = user.currentDate;
   const today = todayStr();
@@ -3537,7 +3820,6 @@ function renderTodo() {
   const label = d === today ? "Aujourd'hui" : weekday.charAt(0).toUpperCase() + weekday.slice(1);
   document.getElementById('dayLabel').innerHTML = `${label}<small>${fmtDateShort(d)}</small>`;
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === user.filter));
-  populateProjectSelect();
   renderTodoList();
   renderTimer();
 }
@@ -3562,14 +3844,12 @@ function renderTodoList() {
   }
   list.classList.remove('empty');
   const todayS = todayStr();
-  const upcomingEvents = getUpcomingEventsForPicker();
   list.innerHTML = tasks.map(t => {
-    const proj = user.projects?.find(p => p.id === t.project);
     const isOverdue = !t.done && t.date < todayS;
     const isPendingDelete = pendingDeleteId === t.id;
-    const isPendingLink = pendingLinkId === t.id;
+    const isPendingTimeEdit = pendingTimeEditId === t.id;
+    const isPendingResetTask = pendingResetTaskId === t.id;
     const carried = !t.done && t.originalDate && t.originalDate < todayS;
-    const linkedEvent = findEventById(t.eventId);
     let actions;
     if (isPendingDelete) {
       actions = `
@@ -3578,25 +3858,35 @@ function renderTodoList() {
         <button class="btn btn-mini" data-action="cancel-delete" type="button">Annuler</button>
         <button class="btn btn-mini btn-danger" data-action="confirm-delete" type="button">Supprimer</button>
       </div>`;
-    } else if (isPendingLink) {
-      const opts = ['<option value="">— Aucun événement —</option>']
-        .concat(upcomingEvents.map(e => {
-          const d = new Date(e.start);
-          const label = `${d.toLocaleDateString('fr-FR', { weekday:'short', day:'numeric', month:'short' })} · ${fmtHour(e.startH)} — ${escapeHtml(e.title)}`;
-          return `<option value="${escapeHtml(e.id)}" ${t.eventId === e.id ? 'selected' : ''}>${label}</option>`;
-        }));
-      const hasEvents = upcomingEvents.length > 0;
+    } else if (isPendingTimeEdit) {
+      const totalMin = Math.round((t.tracked || 0) / 60);
+      const hh = Math.floor(totalMin / 60);
+      const mm = totalMin % 60;
       actions = `
-      <div class="link-picker">
-        ${hasEvents ? `<select class="link-picker-select" data-task="${t.id}">${opts.join('')}</select>` : '<span class="delete-confirm-label" style="color:var(--text-muted);">Aucun agenda connecté</span>'}
-        <button class="btn btn-mini" data-action="cancel-link" type="button">Annuler</button>
-        ${hasEvents ? `<button class="btn btn-mini btn-primary" data-action="confirm-link" type="button">Attacher</button>` : ''}
+      <div class="time-edit">
+        <span class="time-edit-label">Temps tracké</span>
+        <div class="estimate-group" title="Modifier le temps tracké">
+          <input type="number" data-time-edit-h="${t.id}" value="${hh}" min="0" max="99" aria-label="Heures" />
+          <span class="est-unit">h</span>
+          <span class="est-sep">:</span>
+          <input type="number" data-time-edit-m="${t.id}" value="${String(mm).padStart(2,'0')}" min="0" max="59" aria-label="Minutes" />
+          <span class="est-unit">min</span>
+        </div>
+        <button class="btn btn-mini" data-action="cancel-time-edit" type="button">Annuler</button>
+        <button class="btn btn-mini btn-primary" data-action="confirm-time-edit" type="button">Enregistrer</button>
+      </div>`;
+    } else if (isPendingResetTask) {
+      actions = `
+      <div class="delete-confirm">
+        <span class="delete-confirm-label">Remettre le temps à zéro ?</span>
+        <button class="btn btn-mini" data-action="cancel-reset-task" type="button">Annuler</button>
+        <button class="btn btn-mini btn-danger" data-action="confirm-reset-task" type="button">Remettre à zéro</button>
       </div>`;
     } else {
       actions = `
       <div class="todo-actions">
-        <button class="icon-btn" data-action="link" title="Lier à un événement de l'agenda">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        <button class="icon-btn" data-action="edit-time" title="Modifier le temps tracké">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         </button>
         <button class="icon-btn" data-action="select" title="Lancer le chrono sur cette tâche">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
@@ -3606,9 +3896,8 @@ function renderTodoList() {
         </button>
       </div>`;
     }
-    const eventChip = linkedEvent ? `<span class="event-chip" data-action="view-event" data-event-id="${escapeHtml(linkedEvent.id)}" title="Voir dans l'agenda"><span class="event-chip-dot" style="background:${EVENT_COLORS[linkedEvent.cat]||'#6366f1'}"></span>${fmtHour(linkedEvent.startH)} ${escapeHtml(linkedEvent.title.slice(0,40))}${linkedEvent.title.length>40?'…':''}<button class="event-chip-close" data-action="unlink" title="Détacher">×</button></span>` : '';
     return `
-    <div class="todo-item ${t.done ? 'done' : ''} ${t.id === user.activeTaskId ? 'active-work' : ''} ${isPendingDelete ? 'pending-delete' : ''} ${isPendingLink ? 'pending-link' : ''}" draggable="true" data-id="${t.id}">
+    <div class="todo-item ${t.done ? 'done' : ''} ${t.id === user.activeTaskId ? 'active-work' : ''} ${isPendingDelete ? 'pending-delete' : ''} ${isPendingTimeEdit ? 'pending-edit' : ''}" draggable="true" data-id="${t.id}">
       <div class="drag-handle" title="Glisser-déposer pour réorganiser">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>
       </div>
@@ -3616,11 +3905,9 @@ function renderTodoList() {
       <div style="min-width:0; flex:1;">
         <div class="todo-title">${escapeHtml(t.title)}${isOverdue ? '<span class="overdue-badge">EN RETARD</span>' : ''}${carried ? '<span class="carried-badge" title="Reportée automatiquement depuis un jour précédent">↻ Reportée</span>' : ''}</div>
         <div class="todo-meta">
-          <span class="chip chip-${t.priority}"><span class="dot"></span>${priorityLabel(t.priority)}</span>
-          ${proj ? `<span class="project-chip"><span class="pdot" style="background:${proj.color}"></span>${escapeHtml(proj.name)}</span>` : ''}
+          <span class="chip chip-${t.priority} priority-chip" data-action="cycle-priority" title="Cliquer pour changer la priorité"><span class="dot"></span>${priorityLabel(t.priority)}</span>
           ${t.estimate ? `<span>Est. ${fmtEstimate(t.estimate)}</span>` : ''}
-          ${t.tracked ? `<span class="time-badge">⏱ ${fmtMinutes(t.tracked)}</span>` : ''}
-          ${eventChip}
+          ${t.tracked ? `<span class="time-badge" data-action="edit-time" title="Cliquer pour modifier le temps">⏱ ${fmtMinutes(t.tracked)}</span>` : ''}
           ${t.id === user.activeTaskId ? '<span class="chip chip-success"><span class="dot"></span>Sélectionnée</span>' : ''}
         </div>
       </div>
@@ -3632,19 +3919,20 @@ function renderTodoList() {
   list.querySelectorAll('.todo-item').forEach(el => {
     const id = el.dataset.id;
     el.addEventListener('click', (e) => {
-      // Clicks inside the link picker (except its own [data-action] buttons) shouldn't select the task
-      if (e.target.closest('.link-picker') && !e.target.closest('[data-action]')) return;
+      // Clicks inside the time-edit form (except its own [data-action] buttons) shouldn't select the task
+      if (e.target.closest('.time-edit') && !e.target.closest('[data-action]')) return;
       const actionEl = e.target.closest('[data-action]');
       const action = actionEl?.dataset.action;
       if (action === 'toggle') return toggleTask(id);
       if (action === 'delete') return deleteTask(id);
       if (action === 'cancel-delete') return cancelPendingDelete();
       if (action === 'confirm-delete') return confirmPendingDelete(id);
-      if (action === 'link') return openLinkPicker(id);
-      if (action === 'cancel-link') return cancelLinkPicker();
-      if (action === 'confirm-link') return confirmLinkPicker(id);
-      if (action === 'unlink') { e.stopPropagation(); return unlinkTaskFromEvent(id); }
-      if (action === 'view-event') { e.stopPropagation(); return jumpToEvent(actionEl.dataset.eventId); }
+      if (action === 'edit-time') { e.stopPropagation(); return openTimeEdit(id); }
+      if (action === 'cancel-time-edit') { e.stopPropagation(); return cancelTimeEdit(); }
+      if (action === 'confirm-time-edit') { e.stopPropagation(); return confirmTimeEdit(id); }
+      if (action === 'cancel-reset-task') { e.stopPropagation(); return cancelPendingResetTask(); }
+      if (action === 'confirm-reset-task') { e.stopPropagation(); return confirmPendingResetTask(id); }
+      if (action === 'cycle-priority') { e.stopPropagation(); return cyclePriority(id); }
       if (action === 'select') return selectAndStart(id);
       selectActiveTask(id);
     });
@@ -3744,84 +4032,84 @@ function cancelPendingDelete() {
   renderTodoList();
 }
 
-/* ---- Liaison tâche ↔ événement agenda ---- */
-let pendingLinkId = null;
-
-function getUpcomingEventsForPicker() {
-  const real = mergedRealEvents();
-  if (!real) return [];
-  const now = Date.now();
-  const maxTs = now + 14 * 86400000;
-  return real
-    .filter(e => !e.allDay && new Date(e.end).getTime() >= now - 3600000 && new Date(e.start).getTime() <= maxTs)
-    .sort((a, b) => a.start.localeCompare(b.start))
-    .slice(0, 40);
-}
-
-function findEventById(eventId) {
-  if (!eventId) return null;
-  const real = mergedRealEvents();
-  if (!real) return null;
-  return real.find(e => e.id === eventId) || null;
-}
-
-function openLinkPicker(id) {
+/* ---- Édition inline du temps tracké ---- */
+let pendingTimeEditId = null;
+function openTimeEdit(id) {
   if (pendingDeleteId) cancelPendingDelete();
-  if (!mergedRealEvents()) {
-    toast('Connecte d\'abord un agenda (onglet Intégrations)', 'error');
-    return;
+  pendingTimeEditId = id;
+  renderTodoList();
+  // Focus le champ heures à l'ouverture
+  setTimeout(() => {
+    const el = document.querySelector(`[data-time-edit-h="${id}"]`);
+    if (el) { el.focus(); el.select(); }
+  }, 0);
+}
+function cancelTimeEdit() {
+  pendingTimeEditId = null;
+  renderTodoList();
+}
+function confirmTimeEdit(id) {
+  const t = user.tasks.find(x => x.id === id);
+  if (!t) { pendingTimeEditId = null; renderTodoList(); return; }
+  const hEl = document.querySelector(`[data-time-edit-h="${id}"]`);
+  const mEl = document.querySelector(`[data-time-edit-m="${id}"]`);
+  const h = Math.max(0, parseInt(hEl?.value) || 0);
+  const m = Math.max(0, Math.min(59, parseInt(mEl?.value) || 0));
+  const newSec = (h * 60 + m) * 60;
+  t.tracked = newSec;
+  // Si on est en train de tracker cette tâche, on remet le compteur au point zéro
+  // pour repartir proprement de la nouvelle base sans risque de double comptage.
+  if (user.activeTaskId === id) {
+    user.timer.accumulated = 0;
+    if (user.timer.startedAt) user.timer.startedAt = Date.now();
   }
-  pendingLinkId = id;
+  pendingTimeEditId = null;
+  saveRoot();
   renderTodoList();
+  renderTimer();
+  renderHome();
+  toast(`⏱ Temps mis à jour : ${fmtMinutes(newSec)}`, 'success');
 }
-function cancelLinkPicker() {
-  pendingLinkId = null;
-  renderTodoList();
-}
-function confirmLinkPicker(id) {
-  const select = document.querySelector(`.link-picker-select[data-task="${id}"]`);
-  if (!select) { pendingLinkId = null; renderTodoList(); return; }
-  const chosen = select.value || null;
+
+/* ---- Cycle de priorité ---- */
+const PRIORITY_CYCLE = { high: 'medium', medium: 'low', low: 'high' };
+function cyclePriority(id) {
   const t = user.tasks.find(x => x.id === id);
   if (!t) return;
-  const prev = t.eventId;
-  t.eventId = chosen;
-  pendingLinkId = null;
+  t.priority = PRIORITY_CYCLE[t.priority] || 'medium';
   saveRoot();
   renderTodoList();
-  renderAgenda();
-  renderHome();
-  scheduleAlerts();
-  if (chosen) {
-    const ev = findEventById(chosen);
-    toast(`🔗 Liée à « ${ev?.title || 'événement'} »`, 'success');
-  } else if (prev) {
-    toast('Événement détaché');
-  }
+  toast(`Priorité : ${priorityLabel(t.priority).toLowerCase()}`);
 }
-function unlinkTaskFromEvent(id) {
+
+/* ---- Reset du temps d'une tâche (depuis la liste) ---- */
+let pendingResetTaskId = null;
+function askResetTaskTime(id) {
+  if (pendingDeleteId) cancelPendingDelete();
+  if (pendingTimeEditId) cancelTimeEdit();
+  pendingResetTaskId = id;
+  renderTodoList();
+}
+function cancelPendingResetTask() {
+  pendingResetTaskId = null;
+  renderTodoList();
+}
+function confirmPendingResetTask(id) {
   const t = user.tasks.find(x => x.id === id);
-  if (!t || !t.eventId) return;
-  t.eventId = null;
+  if (!t) { pendingResetTaskId = null; renderTodoList(); return; }
+  t.tracked = 0;
+  if (user.activeTaskId === id) {
+    user.timer.accumulated = 0;
+    if (user.timer.startedAt) user.timer.startedAt = Date.now();
+  }
+  pendingResetTaskId = null;
   saveRoot();
   renderTodoList();
-  renderAgenda();
+  renderTimer();
   renderHome();
-  toast('Événement détaché');
+  toast(`Temps remis à zéro pour « ${t.title} »`);
 }
-function jumpToEvent(eventId) {
-  if (!eventId) return;
-  goto('agenda');
-  // Flash the event visually
-  setTimeout(() => {
-    const el = document.querySelector(`.agenda-event[data-event-id="${CSS.escape(eventId)}"]`);
-    if (el) {
-      el.classList.add('flash');
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      setTimeout(() => el.classList.remove('flash'), 2000);
-    }
-  }, 200);
-}
+
 function selectActiveTask(id) {
   if (user.timer.startedAt) stopTimer(true);
   user.activeTaskId = id;
@@ -3871,9 +4159,34 @@ document.getElementById('timerToggle').addEventListener('click', () => {
   else startTimer();
 });
 document.getElementById('timerReset').addEventListener('click', () => {
-  stopTimer(false);
+  if (!user.activeTaskId) {
+    // Pas de tâche : on remet juste le chrono à zéro, rien à confirmer
+    stopTimer(false);
+    user.timer.accumulated = 0;
+    saveRoot(); renderTimer();
+    return;
+  }
+  const t = user.tasks.find(x => x.id === user.activeTaskId);
+  const totalSec = (t?.tracked || 0) + (user.timer.accumulated || 0)
+    + (user.timer.startedAt ? Math.floor((Date.now() - user.timer.startedAt)/1000) : 0);
+  const taskTitle = t ? t.title : 'cette tâche';
+  const ok = confirm(
+    `Remettre à zéro tout le temps tracké sur « ${taskTitle} » ?\n\n` +
+    `Temps total actuel : ${fmtMinutes(totalSec)}\n\n` +
+    `Cette action est définitive.`
+  );
+  if (!ok) return;
+  // Stop le chrono sans persister, vide l'accumulé, et remet aussi t.tracked à 0
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = null;
+  user.timer.startedAt = null;
   user.timer.accumulated = 0;
-  saveRoot(); renderTimer();
+  if (t) t.tracked = 0;
+  saveRoot();
+  renderTimer();
+  renderTodoList();
+  renderHome();
+  toast(`↺ Temps remis à zéro pour « ${taskTitle} »`);
 });
 function startTimer() {
   user.timer.startedAt = Date.now();
@@ -4040,13 +4353,9 @@ function renderAgenda() {
       const height = (e.end - e.start) * 60 - 2;
       if (top < 0 || top > (hours.length*60)) return;
       const color = EVENT_COLORS[e.cat] || '#6366f1';
-      // Tasks linked to this event
-      const linked = e.id ? user.tasks.filter(t => t.eventId === e.id) : [];
-      const linkedHtml = linked.length ? `<div class="agenda-event-linked">🔗 ${linked.length} tâche${linked.length>1?'s':''}</div>` : '';
       html += `<div class="agenda-event" style="top:${top}px; height:${Math.max(height, 20)}px; background:${color};" data-event-id="${escapeHtml(e.id||'')}" title="${escapeHtml(e.title)}">
         <div class="event-title">${escapeHtml(e.title)}</div>
         <div class="event-time">${fmtHour(e.start)} – ${fmtHour(e.end)}</div>
-        ${linkedHtml}
       </div>`;
     });
     // Today line
@@ -5456,21 +5765,6 @@ function fireEventAlert(ev, lead) {
       n.onclick = () => { window.focus(); goto('agenda'); n.close(); };
     } catch (e) { /* ignore */ }
   }
-  // Démarrer le chrono si une tâche est liée à cet événement
-  const linked = user.tasks.find(t => t.eventId === ev.id && !t.done);
-  if (linked) {
-    setTimeout(() => {
-      // Petit délai avant le début de la réunion (à l'heure pile)
-      const delay = Math.max(0, new Date(ev.start).getTime() - Date.now());
-      setTimeout(() => {
-        if (!user.tasks.find(t => t.id === linked.id && !t.done)) return;
-        if (user.activeTaskId === linked.id && user.timer.startedAt) return;
-        selectActiveTask(linked.id);
-        startTimer();
-        toast(`▶ Chrono auto-lancé sur « ${linked.title} »`, 'success');
-      }, delay);
-    }, 0);
-  }
 }
 
 function scheduleAlerts() {
@@ -5503,13 +5797,11 @@ function getWeeklyExportRows(from, to) {
     .filter(t => t.date >= from && t.date <= to)
     .sort((a, b) => a.date.localeCompare(b.date) || (a.order||0)-(b.order||0))
     .map(t => {
-      const projectName = (user.projects?.find(p => p.id === t.project)?.name) || '—';
       const estimatedMin = t.estimate || 0;
       const actualMin = Math.round((t.tracked || 0) / 60);
       return {
         date: t.date,
         title: t.title,
-        project: projectName,
         priority: priorityLabel(t.priority),
         status: t.done ? 'Terminée' : 'En cours',
         estimated: estimatedMin,
@@ -5535,7 +5827,7 @@ function renderExportModal() {
 
   const tbody = document.getElementById('expTableBody');
   if (!rows.length) {
-    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 30px; color: var(--text-faint);">Aucune tâche pour cette semaine</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 30px; color: var(--text-faint);">Aucune tâche pour cette semaine</td></tr>';
     return;
   }
 
@@ -5552,7 +5844,6 @@ function renderExportModal() {
     return `<tr>
       <td>${fmtDateShort(r.date)}</td>
       <td>${escapeHtml(r.title)}</td>
-      <td>${escapeHtml(r.project)}</td>
       <td>${r.priority}</td>
       <td>${statusChip}</td>
       <td style="text-align:right;">${r.estimated} min</td>
@@ -5561,7 +5852,7 @@ function renderExportModal() {
     </tr>`;
   }).join('') + `
     <tr class="summary">
-      <td colspan="5">TOTAL</td>
+      <td colspan="4">TOTAL</td>
       <td style="text-align:right;">${totalEst} min</td>
       <td style="text-align:right;">${totalAct} min</td>
       <td style="text-align:right; color:${totalVar>0?'#ef4444':totalVar<0?'#10b981':'inherit'};">${totalVar>0?'+':''}${totalVar} min</td>
@@ -5586,7 +5877,7 @@ document.getElementById('expDownloadCsv').addEventListener('click', () => {
   const { from, to, mondayDate, sundayDate } = getWeekRange(expWeekOffset);
   const rows = getWeeklyExportRows(from, to);
   if (!rows.length) { toast('Aucune tâche à exporter', 'error'); return; }
-  const header = ['Date','Tâche','Projet','Priorité','Statut','Estimé (min)','Réel (min)','Écart (min)'];
+  const header = ['Date','Tâche','Priorité','Statut','Estimé (min)','Réel (min)','Écart (min)'];
   const totalEst = rows.reduce((s,r) => s+r.estimated, 0);
   const totalAct = rows.reduce((s,r) => s+r.actual, 0);
   const escape = (v) => {
@@ -5594,8 +5885,8 @@ document.getElementById('expDownloadCsv').addEventListener('click', () => {
     if (/[",\n;]/.test(s)) return '"' + s.replace(/"/g,'""') + '"';
     return s;
   };
-  const body = rows.map(r => [r.date, r.title, r.project, r.priority, r.status, r.estimated, r.actual, r.variance].map(escape).join(','));
-  body.push(['','TOTAL','','','',totalEst,totalAct,totalAct-totalEst].map(escape).join(','));
+  const body = rows.map(r => [r.date, r.title, r.priority, r.status, r.estimated, r.actual, r.variance].map(escape).join(','));
+  body.push(['','TOTAL','','',totalEst,totalAct,totalAct-totalEst].map(escape).join(','));
   const csv = '\ufeff' + [header.join(','), ...body].join('\r\n');
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const a = document.createElement('a');
@@ -5616,11 +5907,6 @@ document.getElementById('expPrintable').addEventListener('click', () => {
   const doneCount = rows.filter(r => r.status === 'Terminée').length;
   const title = `${user.profile.firstName} ${user.profile.lastName} · Rapport hebdomadaire`;
   const label = `${mondayDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })} — ${sundayDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`;
-  const byProject = {};
-  rows.forEach(r => {
-    byProject[r.project] = (byProject[r.project] || 0) + r.actual;
-  });
-  const projectRows = Object.entries(byProject).sort((a,b) => b[1]-a[1]).map(([p, m]) => `<tr><td>${escapeHtml(p)}</td><td style="text-align:right;">${m} min</td></tr>`).join('');
   const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${escapeHtml(title)}</title>
 <style>
   * { box-sizing: border-box; }
@@ -5649,15 +5935,13 @@ document.getElementById('expPrintable').addEventListener('click', () => {
   <div class="kpi"><div class="lbl">Temps total</div><div class="val">${Math.floor(totalAct/60)}h ${String(totalAct%60).padStart(2,'0')}m</div></div>
   <div class="kpi"><div class="lbl">Écart vs estimation</div><div class="val">${totalAct-totalEst>0?'+':''}${totalAct-totalEst} min</div></div>
 </div>
-<h2>Temps par projet</h2>
-<table><thead><tr><th>Projet</th><th style="text-align:right;">Temps</th></tr></thead><tbody>${projectRows}</tbody></table>
 <h2>Détail par tâche</h2>
-<table><thead><tr><th>Date</th><th>Tâche</th><th>Projet</th><th>Priorité</th><th>Statut</th><th style="text-align:right;">Estimé</th><th style="text-align:right;">Réel</th><th style="text-align:right;">Écart</th></tr></thead><tbody>
+<table><thead><tr><th>Date</th><th>Tâche</th><th>Priorité</th><th>Statut</th><th style="text-align:right;">Estimé</th><th style="text-align:right;">Réel</th><th style="text-align:right;">Écart</th></tr></thead><tbody>
 ${rows.map(r => {
   const varStr = (r.variance > 0 ? '+' : '') + r.variance;
-  return `<tr><td>${r.date}</td><td>${escapeHtml(r.title)}</td><td>${escapeHtml(r.project)}</td><td>${r.priority}</td><td>${r.status}</td><td style="text-align:right;">${r.estimated} min</td><td style="text-align:right;">${r.actual} min</td><td style="text-align:right;">${varStr} min</td></tr>`;
+  return `<tr><td>${r.date}</td><td>${escapeHtml(r.title)}</td><td>${r.priority}</td><td>${r.status}</td><td style="text-align:right;">${r.estimated} min</td><td style="text-align:right;">${r.actual} min</td><td style="text-align:right;">${varStr} min</td></tr>`;
 }).join('')}
-<tr class="total-row"><td colspan="5">TOTAL</td><td style="text-align:right;">${totalEst} min</td><td style="text-align:right;">${totalAct} min</td><td style="text-align:right;">${totalAct-totalEst>0?'+':''}${totalAct-totalEst} min</td></tr>
+<tr class="total-row"><td colspan="4">TOTAL</td><td style="text-align:right;">${totalEst} min</td><td style="text-align:right;">${totalAct} min</td><td style="text-align:right;">${totalAct-totalEst>0?'+':''}${totalAct-totalEst} min</td></tr>
 </tbody></table>
 <div class="footer">Rapport généré depuis Workspace · ${new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
 </body></html>`;
@@ -5721,7 +6005,8 @@ document.addEventListener('keydown', (e) => {
 
   if (e.key === 'Escape') {
     if (pendingDeleteId) { cancelPendingDelete(); return; }
-    if (pendingLinkId) { cancelLinkPicker(); return; }
+    if (pendingTimeEditId) { cancelTimeEdit(); return; }
+    if (pendingResetTaskId) { cancelPendingResetTask(); return; }
     if (focusOverlay.classList.contains('open')) { closeFocusMode(); return; }
     document.querySelectorAll('.modal-backdrop.open').forEach(m => {
       if (m.id !== 'onboardingModal') m.classList.remove('open');
@@ -5779,6 +6064,8 @@ document.addEventListener('keydown', (e) => {
    BOOT
    ==================================================== */
 function bootDashboard() {
+  // Toujours ouvrir sur les tâches du jour, peu importe le jour sur lequel on était la veille
+  user.currentDate = todayStr();
   carryForwardUnfinishedTasks();
   migrateUserSchema();
   renderProfile();
@@ -5886,12 +6173,27 @@ function renderIntegrationStatusChips() {
 }
 
 loadRoot();
-// First launch: no user
-if (!root.currentUserId || !root.users[root.currentUserId]) {
+// Choisir l'utilisateur courant. Si on a un currentUserId valide → on garde.
+// Sinon, on tente de récupérer le 1er utilisateur existant pour ne pas perdre
+// les données quand le pointeur est cassé. Onboarding seulement si vraiment vide.
+function pickCurrentUserOrShowOnboarding() {
+  if (root.currentUserId && root.users[root.currentUserId]) return root.currentUserId;
+  const ids = Object.keys(root.users);
+  if (ids.length > 0) {
+    root.currentUserId = ids[0];
+    saveRoot();
+    return root.currentUserId;
+  }
+  return null;
+}
+
+const _resolvedUserId = pickCurrentUserOrShowOnboarding();
+if (!_resolvedUserId) {
+  prepareOnboardingModal();
   onboardingModal.classList.add('open');
   setTimeout(() => document.getElementById('onbFirstName').focus(), 80);
 } else {
-  user = root.users[root.currentUserId];
+  user = root.users[_resolvedUserId];
   if (!user.events) seedEventsFor(user);
   if (!user.music) user.music = { currentTrackIdx: 0, playing: true, progressSec: 107 };
   if (!user.integrations) user.integrations = { google: null, spotify: null };
